@@ -368,6 +368,21 @@
   </footer>
 
   <script>
+    // Form submission — send to Brevo without page redirect
+    document.getElementById('waitlist-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: data,
+        mode: 'no-cors'
+      }).finally(() => {
+        form.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      });
+    });
+
     // Countdown to Friday June 13, 2026 at 18:00 Paris time (CEST = UTC+2)
     const LAUNCH = new Date('2026-06-13T16:00:00Z');
 
