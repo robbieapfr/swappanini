@@ -247,8 +247,8 @@ export async function transitionSwap(
       return { error: 'Failed to complete swap' }
     }
     // Both users' collections changed — refresh the relevant pages.
-    revalidatePath('/collection')
-    revalidatePath('/wants')
+    revalidatePath('/album')
+    revalidatePath('/wishes')
     revalidatePath('/home')
     revalidatePath('/playground')
   } else {

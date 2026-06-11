@@ -156,5 +156,16 @@
     "loading": "Cargando…",
     "confirm": "Confirmar",
     "back": "Volver"
+  },
+  "tutorial": {
+    "skip": "Saltar",
+    "cta_next": "Siguiente",
+    "cta_done": "¡Vamos!",
+    "step1_title": "Toca para añadir",
+    "step1_body": "Tocar un cromo gris lo añade a tu álbum. Se vuelve verde.",
+    "step2_title": "Toca de nuevo para repetidos",
+    "step2_body": "Cada toque añade una copia. A partir de 2, el repetido es intercambiable.",
+    "step3_title": "Mantén pulsado para opciones",
+    "step3_body": "Mantén pulsado para quitar el cromo o marcarlo como prioridad ⭐."
   }
 }

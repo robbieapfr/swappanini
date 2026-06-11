@@ -119,8 +119,8 @@ export function OnboardingFlow({ locale }: OnboardingFlowProps) {
       {step === 3 && (
         <Step3Collection
           loading={loading}
-          onStartFromZero={() => handleStep3('collection')}
-          onAlreadyHave={() => handleStep3('collection')}
+          onStartFromZero={() => handleStep3('album')}
+          onAlreadyHave={() => handleStep3('album')}
           onBack={() => setStep(2)}
         />
       )}

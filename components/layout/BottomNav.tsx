@@ -10,8 +10,8 @@ interface BottomNavProps {
 
 const NAV_ITEMS = [
   { key: 'home',       href: (l: string) => `/${l}/home`,       icon: HomeIcon },
-  { key: 'collection', href: (l: string) => `/${l}/collection`,  icon: CollectionIcon },
-  { key: 'wants',      href: (l: string) => `/${l}/wants`,       icon: WantsIcon },
+  { key: 'collection', href: (l: string) => `/${l}/album`,       icon: CollectionIcon },
+  { key: 'wants',      href: (l: string) => `/${l}/wishes`,      icon: WantsIcon },
   { key: 'playground', href: (l: string) => `/${l}/playground`,  icon: SwapIcon },
   { key: 'inbox',      href: (l: string) => `/${l}/inbox`,       icon: InboxIcon },
   { key: 'profile',    href: (l: string) => `/${l}/profile`,     icon: ProfileIcon },

@@ -194,7 +194,7 @@ export async function sendSwapCompletedEmail({
         ⭐ Chaque échange complété te rapproche du badge "Grand Collectionneur" !
       </p>
     </div>
-    ${btn('Voir mon album →', `${APP_URL}/fr/collection`)}
+    ${btn('Voir mon album →', `${APP_URL}/fr/album`)}
   `)
 
   return resend.emails.send({

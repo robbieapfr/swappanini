@@ -10,7 +10,7 @@ const intlMiddleware = createMiddleware({
 })
 
 // Routes that require authentication
-const PROTECTED_PATHS = ['/home', '/collection', '/wants', '/playground', '/inbox', '/profile']
+const PROTECTED_PATHS = ['/home', '/album', '/wishes', '/playground', '/inbox', '/profile']
 
 function isProtectedPath(pathname: string): boolean {
   // Strip locale prefix before checking

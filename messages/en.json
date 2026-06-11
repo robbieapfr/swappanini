@@ -1,9 +1,9 @@
 {
   "nav": {
     "home": "Home",
-    "collection": "Collection",
-    "wants": "Wants",
-    "playground": "Swaps",
+    "collection": "Album",
+    "wants": "Wishes",
+    "playground": "Playground",
     "inbox": "Inbox",
     "profile": "Profile"
   },
@@ -16,11 +16,11 @@
     "top_matches": "Best swaps near you",
     "see_all": "See all",
     "propose_swap": "Propose swap",
-    "no_matches": "Add doubles in Collection to start matching with other collectors.",
+    "no_matches": "Add doubles in your Album to start matching with other collectors.",
     "welcome": "Welcome, {pseudo}!"
   },
   "collection": {
-    "title": "Collection",
+    "title": "Album",
     "owned": "owned",
     "owned_label": "OWNED",
     "doubles_label": "DOUBLES",
@@ -37,13 +37,13 @@
     "doubles_empty_body": "Add a 2nd copy of a sticker to make it swappable."
   },
   "wants": {
-    "title": "My Wants",
+    "title": "My wishes",
     "priorities_title": "Priorities",
     "priorities_empty": "Tap a sticker in your missing list to pin it here (max 5).",
     "add_priority_cta": "Add a priority",
     "top_wanted_title": "Top 10 most wanted",
     "top_rare_title": "Top 10 rarest",
-    "missing_title": "My missing ({count})",
+    "missing_title": "Missing ({count})",
     "search_missing": "Search country, player…",
     "show_more": "Show {remaining} more",
     "complete_title": "Collection complete! 🎉",
@@ -173,5 +173,16 @@
     "loading": "Loading…",
     "confirm": "Confirm",
     "back": "Back"
+  },
+  "tutorial": {
+    "skip": "Skip",
+    "cta_next": "Next",
+    "cta_done": "Let's go!",
+    "step1_title": "Tap to add",
+    "step1_body": "Tapping a gray sticker adds it to your album. It turns green.",
+    "step2_title": "Tap again for doubles",
+    "step2_body": "Each tap adds a copy. From 2 up, the double becomes swappable.",
+    "step3_title": "Long-press for options",
+    "step3_body": "Hold to remove the sticker or pin it as a priority ⭐."
   }
 }

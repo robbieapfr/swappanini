@@ -173,5 +173,16 @@
     "loading": "Chargement…",
     "confirm": "Confirmer",
     "back": "Retour"
+  },
+  "tutorial": {
+    "skip": "Passer",
+    "cta_next": "Suivant",
+    "cta_done": "C'est parti !",
+    "step1_title": "Appuie pour ajouter",
+    "step1_body": "Un appui sur une vignette grise l'ajoute à ta collection. Elle passe au vert.",
+    "step2_title": "Réappuie pour les doublons",
+    "step2_body": "Chaque appui ajoute un exemplaire. À partir de 2, le doublon devient échangeable.",
+    "step3_title": "Appui long pour les options",
+    "step3_body": "Garde le doigt appuyé pour retirer la vignette ou la marquer en priorité ⭐."
   }
 }

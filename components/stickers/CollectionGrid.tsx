@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useUserStickers, type StickerMap } from '@/hooks/useUserStickers'
 import { StickerCard } from './StickerCard'
 import { StickerModal } from './StickerModal'
+import { AlbumTutorial } from './AlbumTutorial'
 import type { Database } from '@/lib/supabase/types'
 import { getFlagUrlByCountry, getCountryEmoji } from '@/lib/flags'
 import { getGroupForCountry, getCountrySortIndex, WC_GROUPS } from '@/lib/sticker-groups'
@@ -364,6 +365,9 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
           onRemove={() => remove(modalSticker.id)}
         />
       )}
+
+      {/* ── First-visit tutorial ── */}
+      <AlbumTutorial />
     </div>
   )
 }

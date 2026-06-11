@@ -29,7 +29,7 @@ export function PlaygroundClient({ matches, locale }: Props) {
           {t('empty_body')}
         </p>
         <Link
-          href={`/${locale}/collection`}
+          href={`/${locale}/album`}
           className="mt-5 px-6 py-3 rounded-full font-black text-sm
             transition-all active:scale-[0.98]"
           style={{ background: '#00C241', color: 'white' }}

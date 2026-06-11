@@ -156,5 +156,16 @@
     "loading": "Laden…",
     "confirm": "Bestätigen",
     "back": "Zurück"
+  },
+  "tutorial": {
+    "skip": "Überspringen",
+    "cta_next": "Weiter",
+    "cta_done": "Los geht's!",
+    "step1_title": "Tippen zum Hinzufügen",
+    "step1_body": "Tippe auf einen grauen Sticker, um ihn ins Album zu legen. Er wird grün.",
+    "step2_title": "Nochmal tippen für Doppelte",
+    "step2_body": "Jeder Tipp fügt ein Exemplar hinzu. Ab 2 wird das Double tauschbar.",
+    "step3_title": "Lange drücken für Optionen",
+    "step3_body": "Halte gedrückt, um den Sticker zu entfernen oder als Priorität ⭐ zu markieren."
   }
 }
