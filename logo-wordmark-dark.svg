@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 170" width="560" height="170">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@800&amp;display=swap');
+    </style>
+  </defs>
+  <rect width="560" height="170" rx="22" fill="#0D1117"/>
+  <rect x="3" y="3" width="554" height="164" rx="19" fill="none" stroke="#00E64D" stroke-width="2.5"/>
+  <text x="280" y="90" font-family="'Fredoka One', cursive, Arial" font-size="62" fill="#00E64D" text-anchor="middle" dominant-baseline="middle">Swappanini</text>
+  <text x="280" y="148" font-family="'Nunito', sans-serif, Arial" font-size="12" font-weight="800" fill="#CCFF00" text-anchor="middle" letter-spacing="3">STICKER SWAP · WORLD CUP 2026</text>
+</svg>

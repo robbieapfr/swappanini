@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&amp;display=swap');
+    </style>
+  </defs>
+  <circle cx="100" cy="100" r="97" fill="#FFFFFF"/>
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#CCFF00" stroke-width="2.5"/>
+  <text x="100" y="100" font-family="'Fredoka One', cursive, Arial" font-size="80" fill="#00E64D" text-anchor="middle" dominant-baseline="middle" letter-spacing="-2">SP</text>
+</svg>
