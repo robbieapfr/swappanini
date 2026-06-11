@@ -100,7 +100,7 @@ export function StickerCard({ sticker, userSticker, onTap, onLongPress }: Sticke
           <span className="font-display font-black text-xs" style={{ color: textColor }}>
             {emoji || code}
           </span>
-          <span className="text-[9px] font-bold leading-none" style={{ color: numColor }}>
+          <span className="text-xs font-bold leading-none" style={{ color: numColor }}>
             {sticker.number}
           </span>
         </div>

@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useUserStickers, type StickerMap } from '@/hooks/useUserStickers'
 import { StickerCard } from './StickerCard'
 import { StickerModal } from './StickerModal'
+import { getCountrySortIndex } from '@/lib/sticker-groups'
+import { getFlagUrlByCountry, getCountryEmoji } from '@/lib/flags'
 import type { Database } from '@/lib/supabase/types'
 
 type Sticker = Database['public']['Tables']['stickers']['Row']
@@ -52,20 +54,43 @@ export function WantsClient({
     [allStickers, stickers]
   )
 
-  // Missing stickers (not owned) with search
+  // Missing stickers (not owned) with search, ordered by country (WC group order)
   const missingStickers = useMemo(() => {
     const q = search.toLowerCase().trim()
-    return allStickers.filter((s) => {
-      if ((stickers[s.id]?.quantity ?? 0) >= 1) return false
-      if (q) {
-        const hay = `${s.country} ${s.name ?? ''} ${s.code}`.toLowerCase()
-        return hay.includes(q)
-      }
-      return true
-    })
+    return allStickers
+      .filter((s) => {
+        if ((stickers[s.id]?.quantity ?? 0) >= 1) return false
+        if (q) {
+          const hay = `${s.country} ${s.name ?? ''} ${s.code}`.toLowerCase()
+          return hay.includes(q)
+        }
+        return true
+      })
+      .sort((a, b) =>
+        getCountrySortIndex(a.country) - getCountrySortIndex(b.country) || a.number - b.number
+      )
   }, [allStickers, stickers, search])
 
   const visibleMissing = missingStickers.slice(0, showCount)
+
+  // Group the visible slice by country for organised rendering
+  const missingByCountry = useMemo(() => {
+    const groups: { country: string; flagUrl: string; emoji: string; items: Sticker[] }[] = []
+    let current: (typeof groups)[number] | null = null
+    for (const s of visibleMissing) {
+      if (!current || current.country !== s.country) {
+        current = {
+          country: s.country,
+          flagUrl: getFlagUrlByCountry(s.country),
+          emoji: getCountryEmoji(s.country),
+          items: [],
+        }
+        groups.push(current)
+      }
+      current.items.push(s)
+    }
+    return groups
+  }, [visibleMissing])
 
   const scrollToMissing = useCallback(() => {
     missingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -194,15 +219,33 @@ export function WantsClient({
           </div>
         ) : (
           <>
-            <div className="flex flex-wrap gap-2">
-              {visibleMissing.map((s) => (
-                <div key={s.id} className="flex-shrink-0" style={{ width: 'calc((100vw - 64px) / 5)', maxWidth: '80px' }}>
-                  <StickerCard
-                    sticker={s}
-                    userSticker={stickers[s.id]}
-                    onTap={openModal}
-                    onLongPress={openModal}
-                  />
+            <div className="space-y-4">
+              {missingByCountry.map((group) => (
+                <div key={group.country}>
+                  {/* Country header */}
+                  <div className="flex items-center gap-2 mb-2">
+                    {group.flagUrl ? (
+                      <img src={group.flagUrl} alt={group.country} className="w-5 h-3.5 object-cover rounded-sm flex-shrink-0" loading="lazy" />
+                    ) : group.emoji ? (
+                      <span className="text-base leading-none">{group.emoji}</span>
+                    ) : null}
+                    <span className="text-xs font-black uppercase tracking-wider" style={{ color: '#1B3B1A' }}>
+                      {group.country}
+                    </span>
+                    <span className="text-xs font-bold text-gray-300">{group.items.length}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((s) => (
+                      <div key={s.id} className="flex-shrink-0" style={{ width: 'calc((100vw - 64px) / 5)', maxWidth: '80px' }}>
+                        <StickerCard
+                          sticker={s}
+                          userSticker={stickers[s.id]}
+                          onTap={openModal}
+                          onLongPress={openModal}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { updateProfile } from '@/lib/profile/actions'
 import { COUNTRIES } from '@/lib/countries'
@@ -35,20 +36,19 @@ interface Props {
 const LOCALES = [
   { code: 'en', label: 'English' },
   { code: 'fr', label: 'Français' },
-  { code: 'es', label: 'Español' },
-  { code: 'de', label: 'Deutsch' },
 ]
 
 const SWAP_MODES = [
-  { value: 'mail', label: 'Par courrier' },
-  { value: 'inperson', label: 'En main' },
-  { value: 'both', label: 'Les deux' },
+  { value: 'mail', key: 'swap_mail' },
+  { value: 'inperson', key: 'swap_inperson' },
+  { value: 'both', key: 'swap_both' },
 ] as const
 
 type PseudoStatus = 'idle' | 'checking' | 'available' | 'taken' | 'same'
 
 export function ProfileClient({ email, profile, badges, locale, leaderboard, friends, friendRequests, pendingCount, currentUserId }: Props) {
   const router = useRouter()
+  const t = useTranslations('profile')
   const [isPending, startTransition] = useTransition()
 
   const handleLocaleChange = (newLocale: string) => {
@@ -73,7 +73,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
       {/* ── Email card ── */}
       <div className="rounded-2xl border border-gray-100 px-4 py-4">
         <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
-          Connecté en tant que
+          {t('logged_in_as')}
         </p>
         <p className="font-bold text-sm" style={{ color: '#1B3B1A' }}>{email}</p>
       </div>
@@ -82,7 +82,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
       <div className="rounded-2xl border border-gray-100 px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-lg font-black" style={{ color: '#00C241' }}>
-            Badges
+            {t('badges')}
           </h2>
           <span className="text-sm font-bold text-gray-400">
             {earnedCount} / {badges.length}
@@ -104,7 +104,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
         <div className="flex items-center gap-2 px-4 pt-4 pb-3">
           <span className="text-lg">🌍</span>
           <h2 className="font-display text-lg font-black" style={{ color: '#00C241' }}>
-            Communauté
+            {t('community')}
           </h2>
           {pendingCount > 0 && (
             <span
@@ -128,7 +128,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
       {/* ── Language switcher ── */}
       <div className="rounded-2xl border border-gray-100 px-4 py-4">
         <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
-          Language / Langue
+          {t('language')}
         </p>
         <select
           value={locale}
@@ -145,29 +145,29 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
       {/* ── Notifications ── */}
       <div className="rounded-2xl border border-gray-100 px-4 py-4 space-y-3">
         <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-          Notifications email
+          {t('notifications')}
         </p>
         <NotifToggle
-          label="Nouvelle proposition d'échange"
-          description="Quand quelqu'un veut échanger avec toi"
+          label={t('notif_proposal_label')}
+          description={t('notif_proposal_desc')}
           storageKey="notif_swap_proposal"
           defaultOn={true}
         />
         <NotifToggle
-          label="Échange accepté / refusé"
-          description="Réponse à tes propositions"
+          label={t('notif_status_label')}
+          description={t('notif_status_desc')}
           storageKey="notif_swap_status"
           defaultOn={true}
         />
         <NotifToggle
-          label="Échange complété"
-          description="Confirmation de fin d'échange"
+          label={t('notif_completed_label')}
+          description={t('notif_completed_desc')}
           storageKey="notif_swap_completed"
           defaultOn={true}
         />
         <NotifToggle
-          label="Demandes d'amis"
-          description="Quand quelqu'un veut t'ajouter"
+          label={t('notif_friend_label')}
+          description={t('notif_friend_desc')}
           storageKey="notif_friend_request"
           defaultOn={true}
         />
@@ -181,7 +181,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
           border-2 transition-all active:scale-[0.98] disabled:opacity-50"
         style={{ borderColor: '#e5e7eb', color: '#6b7280', background: 'white' }}
       >
-        Se déconnecter
+        {t('logout')}
       </button>
     </div>
   )
@@ -189,6 +189,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
 
 // ── Profile info card (with inline edit) ─────────────────────────────
 function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
+  const t = useTranslations('profile')
   const [editing, setEditing] = useState(false)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
@@ -270,7 +271,8 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
     })
   }
 
-  const swapModeLabel = SWAP_MODES.find((m) => m.value === (profile?.swap_preference ?? 'both'))?.label ?? '—'
+  const swapModeKey = SWAP_MODES.find((m) => m.value === (profile?.swap_preference ?? 'both'))?.key
+  const swapModeLabel = swapModeKey ? t(swapModeKey) : '—'
   const countryLabel = COUNTRIES.find((c) => c.code === (profile?.country ?? ''))?.name ?? profile?.country ?? '—'
 
   if (!editing) {
@@ -278,7 +280,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
       <div className="rounded-2xl border border-gray-100 px-4 py-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-lg font-black" style={{ color: '#00C241' }}>
-            Mon profil
+            {t('title')}
           </h2>
           <button
             onClick={() => { setSuccess(false); setEditing(true) }}
@@ -291,25 +293,25 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"
                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Modifier
+            {t('edit')}
           </button>
         </div>
 
         {success && (
           <p className="text-xs font-bold mb-3" style={{ color: '#00C241' }}>
-            ✓ Profil mis à jour !
+            {t('updated')}
           </p>
         )}
 
         <div className="space-y-0">
-          <ProfileRow label="Pseudo" value={`@${profile?.pseudo ?? '—'}`} />
-          <ProfileRow label="Prénom" value={profile?.first_name ?? '—'} />
-          <ProfileRow label="Pays" value={countryLabel} />
-          <ProfileRow label="Ville" value={profile?.city ?? '—'} />
+          <ProfileRow label={t('label_pseudo')} value={`@${profile?.pseudo ?? '—'}`} />
+          <ProfileRow label={t('label_firstname')} value={profile?.first_name ?? '—'} />
+          <ProfileRow label={t('label_country')} value={countryLabel} />
+          <ProfileRow label={t('label_city')} value={profile?.city ?? '—'} />
           {profile?.supported_club && (
-            <ProfileRow label="Club de cœur" value={profile.supported_club} />
+            <ProfileRow label={t('label_club')} value={profile.supported_club} />
           )}
-          <ProfileRow label="Mode d'échange" value={swapModeLabel} />
+          <ProfileRow label={t('label_swapmode')} value={swapModeLabel} />
         </div>
       </div>
     )
@@ -319,19 +321,19 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
     <div className="rounded-2xl border-2 px-4 py-4 space-y-4" style={{ borderColor: '#00C241' }}>
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-black" style={{ color: '#00C241' }}>
-          Modifier le profil
+          {t('edit_title')}
         </h2>
         <button
           onClick={cancelEdit}
           className="text-xs font-black text-gray-400 px-3 py-1.5 rounded-full bg-gray-100"
         >
-          Annuler
+          {t('cancel')}
         </button>
       </div>
 
       {/* Pseudo */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-black uppercase tracking-widest text-gray-500">Pseudo</label>
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_pseudo')}</label>
         <div className="relative">
           <input
             type="text"
@@ -350,16 +352,16 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
           </span>
         </div>
         {pseudoStatus === 'taken' && (
-          <p className="text-xs font-medium text-red-500">Ce pseudo est déjà pris.</p>
+          <p className="text-xs font-medium text-red-500">{t('pseudo_taken')}</p>
         )}
         {pseudoStatus === 'available' && (
-          <p className="text-xs font-medium" style={{ color: '#00C241' }}>Pseudo disponible !</p>
+          <p className="text-xs font-medium" style={{ color: '#00C241' }}>{t('pseudo_available')}</p>
         )}
       </div>
 
       {/* Prénom */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-black uppercase tracking-widest text-gray-500">Prénom</label>
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_firstname')}</label>
         <input
           type="text"
           value={firstName}
@@ -372,7 +374,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
 
       {/* Pays */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-black uppercase tracking-widest text-gray-500">Pays</label>
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_country')}</label>
         <select
           value={country}
           onChange={(e) => setCountry(e.target.value)}
@@ -388,7 +390,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
 
       {/* Ville */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-black uppercase tracking-widest text-gray-500">Ville</label>
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_city')}</label>
         <input
           type="text"
           value={city}
@@ -402,7 +404,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
       {/* Club de cœur */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-black uppercase tracking-widest text-gray-500">
-          Club de cœur <span className="text-gray-300 normal-case font-normal">(optionnel)</span>
+          {t('label_club')} <span className="text-gray-300 normal-case font-normal">{t('optional')}</span>
         </label>
         <select
           value={club}
@@ -410,7 +412,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm
             font-medium text-gray-900 outline-none transition-colors focus:border-[#00C241] focus:bg-white"
         >
-          <option value="">— Aucun / Autre</option>
+          <option value="">{t('club_none')}</option>
           {CLUB_LEAGUES.map(({ league, country: leagueCountry, clubs }) => (
             <optgroup key={league} label={`${leagueCountry} — ${league}`}>
               {clubs.map((c) => (
@@ -423,7 +425,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
 
       {/* Mode d'échange */}
       <div className="flex flex-col gap-2">
-        <label className="text-xs font-black uppercase tracking-widest text-gray-500">Mode d&apos;échange</label>
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_swapmode')}</label>
         <div className="flex rounded-2xl border border-gray-200 overflow-hidden" style={{ background: '#f9fafb' }}>
           {SWAP_MODES.map((m) => (
             <button
@@ -437,7 +439,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
                   : { background: 'transparent', color: '#6b7280' }
               }
             >
-              {m.label}
+              {t(m.key)}
             </button>
           ))}
         </div>
@@ -454,7 +456,7 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
           transition-all active:scale-[0.98] disabled:opacity-40"
         style={{ background: '#00C241', color: 'white' }}
       >
-        {isPending ? 'Enregistrement…' : 'Enregistrer'}
+        {isPending ? t('saving') : t('save')}
       </button>
     </div>
   )

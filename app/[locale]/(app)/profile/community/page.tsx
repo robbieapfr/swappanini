@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { locales, type Locale } from '@/i18n'
@@ -42,6 +42,7 @@ export default async function CommunityPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('community')
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -121,10 +122,10 @@ export default async function CommunityPage({
         </Link>
         <div className="flex-1">
           <h1 className="font-display text-2xl font-black" style={{ color: '#00C241' }}>
-            Communauté
+            {t('title')}
           </h1>
           <p className="text-xs text-gray-400 font-medium">
-            Vois où tu te situes et connecte-toi aux autres collectionneurs.
+            {t('subtitle')}
           </p>
         </div>
       </div>

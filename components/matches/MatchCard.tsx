@@ -121,7 +121,7 @@ function StickerPreview({
         borderColor: '#f87171',
       }}
     >
-      <span className="text-[9px] font-black text-red-700 self-start leading-none">
+      <span className="text-sm font-black text-red-700 self-start leading-none">
         #{sticker.number}
       </span>
       <span className="font-black text-sm text-red-800 leading-none">{code}</span>

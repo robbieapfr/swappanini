@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { locales, type Locale } from '@/i18n'
 import { createClient } from '@/lib/supabase/server'
@@ -27,6 +27,7 @@ export default async function ProfilePage({
 }) {
   const { locale } = await params
   setRequestLocale(locale as Locale)
+  const tp = await getTranslations('profile')
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -103,7 +104,7 @@ export default async function ProfilePage({
 
   return (
     <div className="min-h-screen bg-white">
-      <AppHeader locale={locale} pseudo={profile?.pseudo} title="Profil" />
+      <AppHeader locale={locale} pseudo={profile?.pseudo} title={tp('header_title')} />
       <ProfileClient
         email={user.email ?? ''}
         profile={profile}

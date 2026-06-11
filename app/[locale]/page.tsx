@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { locales, type Locale } from '@/i18n'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -15,6 +15,7 @@ export default async function LandingPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('landing')
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: 'var(--font-nunito)' }}>
@@ -43,7 +44,7 @@ export default async function LandingPage({
             className="text-sm font-black px-4 py-2 rounded-full border-2 transition-all active:scale-[0.97]"
             style={{ borderColor: '#1B3B1A', color: '#1B3B1A' }}
           >
-            Se connecter
+            {t('nav_login')}
           </Link>
         </div>
       </nav>
@@ -54,19 +55,19 @@ export default async function LandingPage({
           className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-6"
           style={{ background: 'rgba(0,194,65,0.1)', color: '#00C241', border: '1px solid rgba(0,194,65,0.25)' }}
         >
-          ⚽ FIFA World Cup 2026
+          ⚽ {t('hero_badge')}
         </span>
 
         <h1
           className="text-5xl leading-tight mb-4"
           style={{ fontFamily: 'var(--font-fredoka)', color: '#1B3B1A', fontSize: 'clamp(2.4rem, 8vw, 3.8rem)' }}
         >
-          Ton album Panini,{' '}
-          <span style={{ color: '#00C241' }}>complété.</span>
+          {t('hero_title_1')}{' '}
+          <span style={{ color: '#00C241' }}>{t('hero_title_2')}</span>
         </h1>
 
         <p className="text-lg font-semibold mb-8 max-w-sm mx-auto" style={{ color: '#6b7280', lineHeight: 1.6 }}>
-          Suis tes vignettes, trouve tes doublons et échange avec des collectionneurs du monde entier.
+          {t('hero_subtitle')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -75,19 +76,19 @@ export default async function LandingPage({
             className="px-8 py-4 rounded-2xl font-black text-lg transition-all active:scale-[0.97] text-center"
             style={{ background: '#AAFF00', color: '#1B3B1A' }}
           >
-            Créer mon compte →
+            {t('cta_register')}
           </Link>
           <Link
             href={`/${locale}/login`}
             className="px-8 py-4 rounded-2xl font-black text-lg transition-all active:scale-[0.97] text-center border-2"
             style={{ borderColor: '#e5e7eb', color: '#374151', background: 'white' }}
           >
-            Se connecter
+            {t('cta_login')}
           </Link>
         </div>
 
         <p className="text-xs font-semibold mt-4" style={{ color: '#9ca3af' }}>
-          Gratuit · Aucune carte bancaire requise
+          {t('free_note')}
         </p>
       </section>
 
@@ -145,17 +146,17 @@ export default async function LandingPage({
             <div className="w-full max-w-xs rounded-2xl px-4 py-3 flex gap-4 justify-center" style={{ background: 'white', border: '1px solid #e5e7eb' }}>
               <div className="text-center">
                 <p className="font-black text-xl" style={{ color: '#00C241' }}>47%</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Complété</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('stat_complete')}</p>
               </div>
               <div className="w-px bg-gray-100" />
               <div className="text-center">
                 <p className="font-black text-xl" style={{ color: '#1B3B1A' }}>12</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Doubles</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('stat_doubles')}</p>
               </div>
               <div className="w-px bg-gray-100" />
               <div className="text-center">
                 <p className="font-black text-xl" style={{ color: '#6b7280' }}>520</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Manquants</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('stat_missing')}</p>
               </div>
             </div>
           </div>
@@ -166,23 +167,19 @@ export default async function LandingPage({
               className="inline-block text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3"
               style={{ background: '#d1fae5', color: '#059669' }}
             >
-              📒 Album digital
+              📒 {t('f1_badge')}
             </span>
             <h2
               className="text-2xl font-black mb-2 leading-tight"
               style={{ fontFamily: 'var(--font-fredoka)', color: '#1B3B1A' }}
             >
-              Suis toutes tes vignettes en un clic
+              {t('f1_title')}
             </h2>
             <p className="text-sm font-semibold leading-relaxed" style={{ color: '#6b7280' }}>
-              Tape sur une vignette pour l'ajouter à ta collection. Un double ? Un appui long et c'est marqué. Ton avancement se met à jour en temps réel.
+              {t('f1_body')}
             </p>
             <ul className="mt-4 space-y-2">
-              {[
-                'Catalogue complet des 980 vignettes WC 2026',
-                'Groupes A–L + Spéciaux Coca-Cola & FWC',
-                'Suivi des doublons et des manquants',
-              ].map((item) => (
+              {[t('f1_b1'), t('f1_b2'), t('f1_b3')].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm font-semibold" style={{ color: '#374151' }}>
                   <span className="text-base leading-none mt-0.5" style={{ color: '#00C241' }}>✓</span>
                   {item}
@@ -228,15 +225,15 @@ export default async function LandingPage({
                         className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full"
                         style={{ background: '#AAFF00', color: '#1B3B1A' }}
                       >
-                        PRIORITÉ
+                        {t('f2_priority')}
                       </span>
                     )}
                   </p>
                   <p className="text-xs text-gray-400">{m.location}</p>
                   <p className="text-xs font-semibold mt-0.5" style={{ color: '#6b7280' }}>
-                    Tu donnes <strong style={{ color: '#1B3B1A' }}>{m.gives}</strong>
+                    {t('f2_gives')} <strong style={{ color: '#1B3B1A' }}>{m.gives}</strong>
                     {' · '}
-                    Tu reçois <strong style={{ color: '#00C241' }}>{m.gets}</strong>
+                    {t('f2_gets')} <strong style={{ color: '#00C241' }}>{m.gets}</strong>
                   </p>
                 </div>
               </div>
@@ -249,23 +246,19 @@ export default async function LandingPage({
               className="inline-block text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3"
               style={{ background: '#fef9c3', color: '#854d0e' }}
             >
-              🔄 Échanges
+              🔄 {t('f2_badge')}
             </span>
             <h2
               className="text-2xl font-black mb-2 leading-tight"
               style={{ fontFamily: 'var(--font-fredoka)', color: '#1B3B1A' }}
             >
-              Échange avec les bons collectionneurs
+              {t('f2_title')}
             </h2>
             <p className="text-sm font-semibold leading-relaxed" style={{ color: '#6b7280' }}>
-              On calcule automatiquement quels collectionneurs ont ce qu'il te faut et veulent ce que tu as. Plus de recherches inutiles — juste les meilleurs matchs.
+              {t('f2_body')}
             </p>
             <ul className="mt-4 space-y-2">
-              {[
-                'Matching intelligent par doublons et envies',
-                'Échange par courrier ou en main propre',
-                'Boîte de messagerie intégrée',
-              ].map((item) => (
+              {[t('f2_b1'), t('f2_b2'), t('f2_b3')].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm font-semibold" style={{ color: '#374151' }}>
                   <span className="text-base leading-none mt-0.5" style={{ color: '#00C241' }}>✓</span>
                   {item}
@@ -282,17 +275,17 @@ export default async function LandingPage({
           className="text-3xl mb-3"
           style={{ fontFamily: 'var(--font-fredoka)', color: '#1B3B1A' }}
         >
-          Prêt à compléter ton album ?
+          {t('cta_title')}
         </h2>
         <p className="text-sm font-semibold mb-6" style={{ color: '#9ca3af' }}>
-          Rejoins les collectionneurs déjà inscrits
+          {t('cta_sub')}
         </p>
         <Link
           href={`/${locale}/register`}
           className="inline-block px-10 py-4 rounded-2xl font-black text-xl transition-all active:scale-[0.97]"
           style={{ background: '#AAFF00', color: '#1B3B1A' }}
         >
-          C&apos;est parti ! →
+          {t('cta_go')}
         </Link>
       </section>
 
@@ -311,7 +304,7 @@ export default async function LandingPage({
           </span>
         </div>
         <p className="text-xs text-gray-300">
-          Non affilié à Panini Group. Fait par des collectionneurs, pour des collectionneurs.
+          {t('footer_disclaimer')}
         </p>
       </footer>
     </div>

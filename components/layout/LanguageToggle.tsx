@@ -4,18 +4,17 @@ import { useState, useRef, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { locales } from '@/i18n'
 
+// Languages offered in the switcher for now (es/de hidden until translated).
+const ENABLED_LOCALES = ['en', 'fr'] as const
+
 const LABELS: Record<string, string> = {
   en: 'EN',
   fr: 'FR',
-  es: 'ES',
-  de: 'DE',
 }
 
 const FULL: Record<string, string> = {
   en: 'English',
   fr: 'Français',
-  es: 'Español',
-  de: 'Deutsch',
 }
 
 interface Props {
@@ -77,7 +76,7 @@ export function LanguageToggle({ locale, variant = 'pill' }: Props) {
           className="absolute right-0 mt-1.5 w-36 rounded-xl bg-white py-1 z-50"
           style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.14)', border: '1px solid #f3f4f6' }}
         >
-          {locales.map((code) => (
+          {ENABLED_LOCALES.map((code) => (
             <button
               key={code}
               onClick={() => switchTo(code)}

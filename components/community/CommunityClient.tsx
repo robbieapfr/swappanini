@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   sendFriendRequest,
   removeFriend,
@@ -26,12 +27,13 @@ export function CommunityClient({
   requests,
   pendingCount,
 }: Props) {
+  const t = useTranslations('community')
   const [tab, setTab] = useState<Tab>('leaderboard')
 
   const tabs: { key: Tab; label: string; count?: number }[] = [
-    { key: 'leaderboard', label: 'Classement' },
-    { key: 'friends',     label: 'Amis', count: friends.length || undefined },
-    { key: 'requests',    label: 'Demandes', count: pendingCount || undefined },
+    { key: 'leaderboard', label: t('tab_leaderboard') },
+    { key: 'friends',     label: t('tab_friends'), count: friends.length || undefined },
+    { key: 'requests',    label: t('tab_requests'), count: pendingCount || undefined },
   ]
 
   return (
@@ -88,7 +90,7 @@ export function CommunityClient({
           friends.length === 0 ? (
             <EmptyState
               emoji="👥"
-              text="Aucun ami pour l'instant. Cherche des collectionneurs dans le Classement !"
+              text={t('empty_friends')}
             />
           ) : (
             friends.map((u, i) => (
@@ -101,7 +103,7 @@ export function CommunityClient({
           requests.length === 0 ? (
             <EmptyState
               emoji="📬"
-              text="Aucune demande d'ami en attente."
+              text={t('empty_requests')}
             />
           ) : (
             requests.map((req) => (
@@ -141,6 +143,7 @@ function UserCard({
   mode: 'leaderboard' | 'friends'
   isMe?: boolean
 }) {
+  const t = useTranslations('community')
   const [isPending, startTransition] = useTransition()
   const [localStatus, setLocalStatus] = useState(user.friendship_status)
   const [iRequested, setIRequested] = useState(user.i_requested ?? false)
@@ -205,7 +208,7 @@ function UserCard({
                     className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
                     style={{ background: '#00C241', color: 'white' }}
                   >
-                    TOI
+                    {t('you')}
                   </span>
                 )}
               </p>
@@ -250,14 +253,14 @@ function UserCard({
                 <path d="M7 16H3l4-4M3 16h14a4 4 0 0 0 0-8h-1M17 8h4l-4 4M21 8H7a4 4 0 0 0 0 8h1"
                   stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              {user.swap_count} échange{user.swap_count !== 1 ? 's' : ''}
+              {t('swaps_count', { count: user.swap_count })}
             </span>
             {user.badge_count > 0 && (
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="#9ca3af">
                   <path d="M12 2L9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2Z" />
                 </svg>
-                {user.badge_count} badge{user.badge_count !== 1 ? 's' : ''}
+                {t('badges_count', { count: user.badge_count })}
               </span>
             )}
           </div>
@@ -277,6 +280,7 @@ function ActionButton({
   onAdd: () => void
   onRemove: () => void
 }) {
+  const t = useTranslations('community')
   if (mode === 'friends' || status === 'accepted') {
     return (
       <button
@@ -291,7 +295,7 @@ function ActionButton({
           <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
           <line x1="23" y1="11" x2="17" y2="11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
-        Retirer
+        {t('remove')}
       </button>
     )
   }
@@ -299,7 +303,7 @@ function ActionButton({
   if (status === 'pending' && iRequested) {
     return (
       <span className="flex-shrink-0 text-xs font-bold text-gray-400 px-2">
-        Demande envoyée
+        {t('request_sent')}
       </span>
     )
   }
@@ -325,6 +329,7 @@ function ActionButton({
 
 // ── RequestCard ───────────────────────────────────────────────
 function RequestCard({ request }: { request: FriendRequest }) {
+  const t = useTranslations('community')
   const [isPending, startTransition] = useTransition()
   const [done, setDone] = useState(false)
 
@@ -380,7 +385,7 @@ function RequestCard({ request }: { request: FriendRequest }) {
             transition-all active:scale-[0.98] disabled:opacity-50"
           style={{ background: '#00C241', color: 'white' }}
         >
-          Accepter
+          {t('accept')}
         </button>
         <button
           onClick={handleDecline}
@@ -389,7 +394,7 @@ function RequestCard({ request }: { request: FriendRequest }) {
             border transition-all active:scale-[0.98] disabled:opacity-50"
           style={{ borderColor: '#e5e7eb', color: '#6b7280', background: 'white' }}
         >
-          Refuser
+          {t('decline')}
         </button>
       </div>
     </div>
