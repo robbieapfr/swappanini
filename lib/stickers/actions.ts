@@ -28,13 +28,16 @@ export async function upsertSticker(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase.from('user_stickers') as any).upsert({
-    user_id: user.id,
-    sticker_id: stickerId,
-    quantity: Math.max(0, quantity),
-    priority: priority ?? null,
-    wanted: quantity === 0 && !!priority, // true when missing but pinned
-  })
+  const { error } = await (supabase.from('user_stickers') as any).upsert(
+    {
+      user_id: user.id,
+      sticker_id: stickerId,
+      quantity: Math.max(0, quantity),
+      priority: priority ?? null,
+      wanted: quantity === 0 && !!priority, // true when missing but pinned
+    },
+    { onConflict: 'user_id,sticker_id' }
+  )
 
   return error ? { error: error.message } : { success: true }
 }

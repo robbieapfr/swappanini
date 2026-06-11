@@ -101,6 +101,7 @@ export interface MatchWithStickers {
     number: number
     name: string | null
     code: string
+    country: string
   }[]
 }
 
@@ -151,13 +152,13 @@ export async function getMatchesWithStickers(
     topMatches.map(async (match) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: theirDoubles } = await (supabase.from('user_stickers') as any)
-        .select('sticker_id, stickers(id, number, name, code)')
+        .select('sticker_id, stickers(id, number, name, code, country)')
         .eq('user_id', match.id)
         .gte('quantity', 2)
         .limit(50) as {
         data: {
           sticker_id: number
-          stickers: { id: number; number: number; name: string | null; code: string } | null
+          stickers: { id: number; number: number; name: string | null; code: string; country: string } | null
         }[] | null
       }
 

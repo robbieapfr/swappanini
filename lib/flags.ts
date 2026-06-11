@@ -1,60 +1,98 @@
 /**
- * Maps the 3-letter country codes used in the Panini WC 2026 sticker catalogue
- * to their ISO 3166-1 alpha-2 codes (used by flagcdn.com).
- * Subdivision flags (England, Scotland) use flagcdn.com's subdivision format.
+ * Canonical country data keyed by the exact French name stored in the
+ * `stickers.country` column. Keying by country name (instead of the DB `code`,
+ * which uses inconsistent FIFA conventions like KSA / COD) makes flags and
+ * display codes reliable.
+ *
+ * - code  : 3-letter code shown on the sticker (FIFA style, as printed on Panini)
+ * - iso2  : ISO 3166-1 alpha-2 used by flagcdn.com (subdivisions use gb-xxx)
+ * - emoji : used instead of a flag image for the special collections
  */
-const CODE_TO_ISO2: Record<string, string> = {
-  // North / Central America
-  USA: 'us', CAN: 'ca', MEX: 'mx', CRC: 'cr', PAN: 'pa',
-  HAI: 'ht', JAM: 'jm', HON: 'hn', SLV: 'sv', TRI: 'tt', CUW: 'cw',
-  // South America
-  BRA: 'br', ARG: 'ar', URU: 'uy', COL: 'co', CHI: 'cl',
-  ECU: 'ec', PER: 'pe', PAR: 'py', VEN: 've', BOL: 'bo',
-  // Europe
-  FRA: 'fr', ESP: 'es', GER: 'de', ENG: 'gb-eng', POR: 'pt',
-  NED: 'nl', BEL: 'be', CRO: 'hr', SUI: 'ch', AUT: 'at',
-  DEN: 'dk', SWE: 'se', NOR: 'no', SCO: 'gb-sct', WAL: 'gb-wls',
-  POL: 'pl', CZE: 'cz', SVK: 'sk', HUN: 'hu', ROU: 'ro',
-  SRB: 'rs', SVN: 'si', ALB: 'al', TUR: 'tr', UKR: 'ua',
-  GEO: 'ge', GRE: 'gr', BIH: 'ba',
-  // Africa
-  MAR: 'ma', SEN: 'sn', NGA: 'ng', EGY: 'eg', CMR: 'cm',
-  GHA: 'gh', MLI: 'ml', CIV: 'ci', TUN: 'tn', ZAM: 'zm',
-  ANG: 'ao', BFA: 'bf', GAB: 'ga', GUI: 'gn', DRC: 'cd',
-  RSA: 'za', ZIM: 'zw', KEN: 'ke', ETH: 'et', TAN: 'tz',
-  MOZ: 'mz', UGA: 'ug', RWA: 'rw', BEN: 'bj', TOG: 'tg',
-  ALG: 'dz', CPV: 'cv',
-  // Asia / Oceania
-  JPN: 'jp', KOR: 'kr', SAU: 'sa', IRN: 'ir', AUS: 'au',
-  QAT: 'qa', CHN: 'cn', UAE: 'ae', JOR: 'jo', IRQ: 'iq',
-  UZB: 'uz', THA: 'th', VIE: 'vn', IND: 'in', IDN: 'id',
-  NZL: 'nz', FIJ: 'fj',
+interface CountryInfo {
+  code: string
+  iso2?: string
+  emoji?: string
 }
 
-/** Returns a flagcdn.com image URL for a 3-letter FIFA code, or '' if not found */
-export function getFlagUrl(code: string): string {
-  if (!code) return ''
-  const iso2 = CODE_TO_ISO2[code.slice(0, 3).toUpperCase()]
-  if (!iso2) return ''
-  return `https://flagcdn.com/w40/${iso2}.png`
+const COUNTRIES: Record<string, CountryInfo> = {
+  // Group A
+  'Mexique': { code: 'MEX', iso2: 'mx' },
+  'Afrique du Sud': { code: 'RSA', iso2: 'za' },
+  'Corée du Sud': { code: 'KOR', iso2: 'kr' },
+  'Tchéquie': { code: 'CZE', iso2: 'cz' },
+  // Group B
+  'Canada': { code: 'CAN', iso2: 'ca' },
+  'Bosnie-Herzégovine': { code: 'BIH', iso2: 'ba' },
+  'Qatar': { code: 'QAT', iso2: 'qa' },
+  'Suisse': { code: 'SUI', iso2: 'ch' },
+  // Group C
+  'Brésil': { code: 'BRA', iso2: 'br' },
+  'Maroc': { code: 'MAR', iso2: 'ma' },
+  'Haïti': { code: 'HAI', iso2: 'ht' },
+  'Écosse': { code: 'SCO', iso2: 'gb-sct' },
+  // Group D
+  'États-Unis': { code: 'USA', iso2: 'us' },
+  'Paraguay': { code: 'PAR', iso2: 'py' },
+  'Australie': { code: 'AUS', iso2: 'au' },
+  'Türkiye': { code: 'TUR', iso2: 'tr' },
+  // Group E
+  'Allemagne': { code: 'GER', iso2: 'de' },
+  'Curaçao': { code: 'CUW', iso2: 'cw' },
+  "Côte d'Ivoire": { code: 'CIV', iso2: 'ci' },
+  'Équateur': { code: 'ECU', iso2: 'ec' },
+  // Group F
+  'Pays-Bas': { code: 'NED', iso2: 'nl' },
+  'Japon': { code: 'JPN', iso2: 'jp' },
+  'Suède': { code: 'SWE', iso2: 'se' },
+  'Tunisie': { code: 'TUN', iso2: 'tn' },
+  // Group G
+  'Belgique': { code: 'BEL', iso2: 'be' },
+  'Égypte': { code: 'EGY', iso2: 'eg' },
+  'Iran': { code: 'IRN', iso2: 'ir' },
+  'Nouvelle-Zélande': { code: 'NZL', iso2: 'nz' },
+  // Group H
+  'Espagne': { code: 'ESP', iso2: 'es' },
+  'Cap-Vert': { code: 'CPV', iso2: 'cv' },
+  'Arabie Saoudite': { code: 'KSA', iso2: 'sa' },
+  'Uruguay': { code: 'URU', iso2: 'uy' },
+  // Group I
+  'France': { code: 'FRA', iso2: 'fr' },
+  'Sénégal': { code: 'SEN', iso2: 'sn' },
+  'Irak': { code: 'IRQ', iso2: 'iq' },
+  'Norvège': { code: 'NOR', iso2: 'no' },
+  // Group J
+  'Argentine': { code: 'ARG', iso2: 'ar' },
+  'Algérie': { code: 'ALG', iso2: 'dz' },
+  'Autriche': { code: 'AUT', iso2: 'at' },
+  'Jordanie': { code: 'JOR', iso2: 'jo' },
+  // Group K
+  'Portugal': { code: 'POR', iso2: 'pt' },
+  'RD Congo': { code: 'COD', iso2: 'cd' },
+  'Ouzbékistan': { code: 'UZB', iso2: 'uz' },
+  'Colombie': { code: 'COL', iso2: 'co' },
+  // Group L
+  'Angleterre': { code: 'ENG', iso2: 'gb-eng' },
+  'Croatie': { code: 'CRO', iso2: 'hr' },
+  'Ghana': { code: 'GHA', iso2: 'gh' },
+  'Panama': { code: 'PAN', iso2: 'pa' },
+  // Specials — rendered with an emoji emblem instead of a flag image
+  'Spécial Coupe du Monde': { code: 'FWC', emoji: '🏆' },
+  'Spécial Coca-Cola': { code: 'CC', emoji: '🥤' },
 }
 
-/** Legacy emoji fallback — may not render on Windows */
-const CODE_TO_FLAG: Record<string, string> = {
-  USA: '🇺🇸', CAN: '🇨🇦', MEX: '🇲🇽', FRA: '🇫🇷', ESP: '🇪🇸',
-  GER: '🇩🇪', ENG: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', POR: '🇵🇹', NED: '🇳🇱', BEL: '🇧🇪',
-  CRO: '🇭🇷', SUI: '🇨🇭', AUT: '🇦🇹', DEN: '🇩🇰', SWE: '🇸🇪',
-  NOR: '🇳🇴', SCO: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', BRA: '🇧🇷', ARG: '🇦🇷', URU: '🇺🇾',
-  COL: '🇨🇴', ECU: '🇪🇨', PAR: '🇵🇾', MAR: '🇲🇦', SEN: '🇸🇳',
-  EGY: '🇪🇬', GHA: '🇬🇭', CIV: '🇨🇮', TUN: '🇹🇳', DRC: '🇨🇩',
-  RSA: '🇿🇦', ALG: '🇩🇿', BIH: '🇧🇦', CPV: '🇨🇻', CUW: '🇨🇼',
-  JPN: '🇯🇵', KOR: '🇰🇷', SAU: '🇸🇦', IRN: '🇮🇷', AUS: '🇦🇺',
-  QAT: '🇶🇦', JOR: '🇯🇴', IRQ: '🇮🇶', UZB: '🇺🇿', NZL: '🇳🇿',
-  PAN: '🇵🇦', HAI: '🇭🇹', CRC: '🇨🇷',
+/** flagcdn.com image URL for a country (French name), or '' if none/special */
+export function getFlagUrlByCountry(country: string): string {
+  const info = COUNTRIES[country]
+  if (!info?.iso2) return ''
+  return `https://flagcdn.com/w40/${info.iso2}.png`
 }
 
-/** Returns flag emoji for a 3-letter sticker code, or '' if not found */
-export function getFlag(code: string): string {
-  if (!code) return ''
-  return CODE_TO_FLAG[code.slice(0, 3).toUpperCase()] ?? ''
+/** Emoji emblem for special collections (🏆 / 🥤), or '' for regular countries */
+export function getCountryEmoji(country: string): string {
+  return COUNTRIES[country]?.emoji ?? ''
+}
+
+/** 3-letter display code for a country, falling back to a provided code */
+export function getDisplayCode(country: string, fallback = ''): string {
+  return COUNTRIES[country]?.code ?? (fallback ? fallback.slice(0, 3).toUpperCase() : '')
 }

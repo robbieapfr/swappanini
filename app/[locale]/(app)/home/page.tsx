@@ -25,6 +25,7 @@ export default async function HomePage({
   const [
     { data: profile },
     { data: collectionStats },
+    { count: total },
     { data: matches },
   ] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,6 +37,10 @@ export default async function HomePage({
     (supabase.from('user_stickers') as any)
       .select('quantity')
       .eq('user_id', user.id) as Promise<{ data: { quantity: number }[] | null; error: unknown }>,
+    // Canonical catalogue size — same base the album uses, so percentages match
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.from('stickers') as any)
+      .select('id', { count: 'exact', head: true }) as Promise<{ count: number | null }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_matches', { me: user.id }) as Promise<{
       data: {
@@ -48,8 +53,8 @@ export default async function HomePage({
   const rows = collectionStats ?? []
   const owned = rows.filter((r) => r.quantity >= 1).length
   const doubles = rows.filter((r) => r.quantity >= 2).length
-  const total = 980
-  const pct = Math.round((owned / total) * 100)
+  const totalStickers = total ?? 980
+  const pct = totalStickers > 0 ? Math.round((owned / totalStickers) * 100) : 0
   const topMatches = matches?.slice(0, 5) ?? []
 
   return (

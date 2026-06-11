@@ -1,0 +1,49 @@
+<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Template sticker placeholder Swap Panini">
+  <title>Sticker placeholder — Swap Panini</title>
+  <desc>Carte sticker vierge aux couleurs Swap Panini, avec emplacements pour photo, drapeau, nom, caracteristiques et club.</desc>
+
+  <!-- Card background -->
+  <rect x="4" y="4" width="592" height="792" rx="28" fill="#AAFF00" stroke="#1B3B1A" stroke-width="6"/>
+
+  <!-- Sticker number badge -->
+  <rect x="28" y="28" width="104" height="44" rx="10" fill="#1B3B1A"/>
+  <text x="80" y="58" font-family="Arial, sans-serif" font-weight="800" font-size="22" fill="#AAFF00" text-anchor="middle">N&#176; 00</text>
+
+  <!-- Top-right roundel: swap icon + edition -->
+  <circle cx="512" cy="130" r="58" fill="#1B3B1A"/>
+  <path d="M 488 116 H 526 L 514 104" stroke="#AAFF00" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 536 144 H 498 L 510 156" stroke="#AAFF00" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="512" y="178" font-family="Arial, sans-serif" font-weight="800" font-size="18" fill="#AAFF00" text-anchor="middle">2026</text>
+
+  <!-- Photo placeholder zone -->
+  <rect x="48" y="92" width="382" height="436" rx="20" fill="#1B3B1A"/>
+  <circle cx="239" cy="240" r="56" fill="#AAFF00"/>
+  <path d="M 134 456 C 134 340 344 340 344 456 Z" fill="#AAFF00"/>
+  <text x="239" y="500" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#AAFF00" text-anchor="middle" letter-spacing="2">PHOTO JOUEUR</text>
+
+  <!-- Flag placeholder circle -->
+  <circle cx="462" cy="470" r="44" fill="#AAFF00" stroke="#1B3B1A" stroke-width="5"/>
+  <circle cx="462" cy="470" r="28" fill="none" stroke="#1B3B1A" stroke-width="3"/>
+  <ellipse cx="462" cy="470" rx="12" ry="28" fill="none" stroke="#1B3B1A" stroke-width="3"/>
+  <line x1="434" y1="470" x2="490" y2="470" stroke="#1B3B1A" stroke-width="3"/>
+  <text x="462" y="532" font-family="Arial, sans-serif" font-weight="800" font-size="18" fill="#1B3B1A" text-anchor="middle">PAYS</text>
+
+  <!-- Vertical "MANQUANT" text -->
+  <text x="580" y="400" font-family="Arial, sans-serif" font-weight="800" font-size="26" fill="#1B3B1A" text-anchor="middle" letter-spacing="6" transform="rotate(90 580 400)">MANQUANT &#8226; MANQUANT</text>
+
+  <!-- Name plate -->
+  <rect x="48" y="560" width="464" height="60" rx="14" fill="#1B3B1A"/>
+  <text x="280" y="600" font-family="Arial, sans-serif" font-weight="800" font-size="28" fill="#AAFF00" text-anchor="middle">PRENOM NOM</text>
+
+  <!-- Stats plate -->
+  <rect x="48" y="630" width="464" height="44" rx="12" fill="#1B3B1A"/>
+  <text x="280" y="659" font-family="Arial, sans-serif" font-weight="600" font-size="19" fill="#AAFF00" text-anchor="middle">JJ-MM-AAAA  |  X,XX m  |  XX kg</text>
+
+  <!-- Club plate -->
+  <rect x="48" y="684" width="332" height="50" rx="12" fill="#1B3B1A"/>
+  <text x="214" y="717" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#AAFF00" text-anchor="middle">CLUB (PAYS)</text>
+
+  <!-- Swap'26 badge -->
+  <rect x="392" y="684" width="120" height="50" rx="12" fill="#1B3B1A"/>
+  <text x="452" y="717" font-family="Arial, sans-serif" font-weight="800" font-size="18" fill="#AAFF00" text-anchor="middle">SWAP'26</text>
+</svg>

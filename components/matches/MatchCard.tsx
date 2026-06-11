@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
+import { getDisplayCode } from '@/lib/flags'
 import type { MatchWithStickers } from '@/lib/matching/queries'
 
 interface MatchCardProps {
@@ -106,9 +107,9 @@ export function MatchCard({ match, locale }: MatchCardProps) {
 function StickerPreview({
   sticker,
 }: {
-  sticker: { id: number; number: number; name: string | null; code: string }
+  sticker: { id: number; number: number; name: string | null; code: string; country: string }
 }) {
-  const code = sticker.code?.slice(0, 2).toUpperCase() ?? '??'
+  const code = getDisplayCode(sticker.country, sticker.code)
 
   return (
     <div

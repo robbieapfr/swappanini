@@ -3,6 +3,7 @@
 import { useRef, useCallback } from 'react'
 import type { Database } from '@/lib/supabase/types'
 import type { UserSticker } from '@/hooks/useUserStickers'
+import { getDisplayCode, getCountryEmoji } from '@/lib/flags'
 
 type Sticker = Database['public']['Tables']['stickers']['Row']
 
@@ -43,18 +44,23 @@ export function StickerCard({ sticker, userSticker, onTap, onLongPress }: Sticke
     didLongPress.current = true
   }, [])
 
-  const countryCode = sticker.code?.slice(0, 2).toUpperCase() ?? '??'
+  const emoji = getCountryEmoji(sticker.country)
+  const code = getDisplayCode(sticker.country, sticker.code)
 
-  // State-based styles
-  let bg: string, borderColor: string, borderDash: boolean, codeColor: string
+  // ── State-based styles ──────────────────────────────────────
+  // double  → filled green (stands out as swappable)
+  // owned   → white with solid green outline
+  // priority(missing) → amber tint, dashed, starred
+  // missing → neutral gray "empty slot"
+  let bg: string, borderColor: string, borderStyle: 'solid' | 'dashed', textColor: string, numColor: string
   if (isDouble) {
-    bg = 'white'; borderColor = '#00C241'; borderDash = false; codeColor = '#1B3B1A'
+    bg = '#00C241'; borderColor = '#00C241'; borderStyle = 'solid'; textColor = '#ffffff'; numColor = 'rgba(255,255,255,0.75)'
   } else if (isOwned) {
-    bg = 'white'; borderColor = '#00C241'; borderDash = false; codeColor = '#1B3B1A'
+    bg = '#ffffff'; borderColor = '#00C241'; borderStyle = 'solid'; textColor = '#1B3B1A'; numColor = '#9ca3af'
   } else if (isPriority) {
-    bg = '#f0fff4'; borderColor = '#AAFF00'; borderDash = true; codeColor = '#7CB900'
+    bg = '#FFFBEB'; borderColor = '#F59E0B'; borderStyle = 'dashed'; textColor = '#B45309'; numColor = '#D9923B'
   } else {
-    bg = 'white'; borderColor = '#86efac'; borderDash = true; codeColor = '#86efac'
+    bg = '#F3F4F6'; borderColor = '#E5E7EB'; borderStyle = 'solid'; textColor = '#9CA3AF'; numColor = '#C4C9D0'
   }
 
   return (
@@ -63,7 +69,7 @@ export function StickerCard({ sticker, userSticker, onTap, onLongPress }: Sticke
         transition-transform overflow-visible"
       style={{
         background: bg,
-        border: `1.5px ${borderDash ? 'dashed' : 'solid'} ${borderColor}`,
+        border: `1.5px ${borderStyle} ${borderColor}`,
         height: '52px',
         width: '100%',
       }}
@@ -72,14 +78,6 @@ export function StickerCard({ sticker, userSticker, onTap, onLongPress }: Sticke
       onPointerLeave={cancelPress}
       onPointerCancel={cancelPress}
     >
-      {/* Number */}
-      <span
-        className="absolute top-1 left-1.5 text-[9px] font-black leading-none"
-        style={{ color: isOwned ? '#9ca3af' : codeColor }}
-      >
-        {sticker.number}
-      </span>
-
       {/* Double badge */}
       {isDouble && extraQty > 0 && (
         <span
@@ -91,31 +89,30 @@ export function StickerCard({ sticker, userSticker, onTap, onLongPress }: Sticke
         </span>
       )}
 
-      {/* Priority star */}
+      {/* Priority star (missing but pinned) */}
       {isPriority && !isOwned && (
         <span className="absolute -top-1.5 -right-1.5 text-[11px] leading-none z-10">⭐</span>
       )}
 
-      {/* Country code centered */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span
-          className="font-display font-black text-xs leading-none"
-          style={{ color: codeColor }}
-        >
-          {countryCode}
-        </span>
+      {/* Center: code + number on the same line, name below */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-1 pointer-events-none">
+        <div className="flex items-baseline gap-1 leading-none">
+          <span className="font-display font-black text-xs" style={{ color: textColor }}>
+            {emoji || code}
+          </span>
+          <span className="text-[9px] font-bold leading-none" style={{ color: numColor }}>
+            {sticker.number}
+          </span>
+        </div>
+        {sticker.name && (
+          <span
+            className="mt-0.5 px-0.5 text-center text-[8px] font-medium truncate leading-none w-full"
+            style={{ color: textColor, opacity: 0.85 }}
+          >
+            {sticker.name}
+          </span>
+        )}
       </div>
-
-      {/* Player name bottom */}
-      {sticker.name && (
-        <span
-          className="absolute bottom-1 left-0 right-0 px-1 text-center
-            text-[8px] font-medium truncate leading-none"
-          style={{ color: isOwned ? '#6b7280' : codeColor, opacity: isOwned ? 1 : 0.8 }}
-        >
-          {sticker.name}
-        </span>
-      )}
     </div>
   )
 }

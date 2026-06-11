@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { proposeSwap } from '@/lib/swaps/actions'
+import { getDisplayCode } from '@/lib/flags'
 import type { SwapItem, MatchReceiver } from '@/lib/matching/queries'
 
 const MAX_CHARS = 280
@@ -90,7 +91,7 @@ export function ProposePageClient({
     })
   }
 
-  const codeOf = (s: SwapItem) => s.code.slice(0, 2).toUpperCase()
+  const codeOf = (s: SwapItem) => getDisplayCode(s.country, s.code)
 
   return (
     <div className="min-h-screen bg-white">
@@ -368,7 +369,7 @@ function StickerPicker({
                 className="text-xs font-black w-8 text-center py-1 rounded-lg flex-shrink-0"
                 style={{ background: '#e5e7eb', color: '#374151' }}
               >
-                {s.code.slice(0, 2).toUpperCase()}
+                {getDisplayCode(s.country, s.code)}
               </span>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm truncate" style={{ color: '#1B3B1A' }}>

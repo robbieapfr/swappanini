@@ -6,7 +6,7 @@ import { useUserStickers, type StickerMap } from '@/hooks/useUserStickers'
 import { StickerCard } from './StickerCard'
 import { StickerModal } from './StickerModal'
 import type { Database } from '@/lib/supabase/types'
-import { getFlagUrl } from '@/lib/flags'
+import { getFlagUrlByCountry, getCountryEmoji } from '@/lib/flags'
 import { getGroupForCountry, getCountrySortIndex, WC_GROUPS } from '@/lib/sticker-groups'
 
 type Sticker = Database['public']['Tables']['stickers']['Row']
@@ -72,9 +72,10 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
     return Array.from(map.entries())
       .map(([country, items]) => {
         const code = items[0]?.code ?? ''
-        const flagUrl = getFlagUrl(code)
+        const flagUrl = getFlagUrlByCountry(country)
+        const emoji = getCountryEmoji(country)
         const owned = items.filter((s) => (stickers[s.id]?.quantity ?? 0) >= 1).length
-        return { country, code, flagUrl, items, owned, total: items.length }
+        return { country, code, flagUrl, emoji, items, owned, total: items.length }
       })
       .sort((a, b) => getCountrySortIndex(a.country) - getCountrySortIndex(b.country))
   }, [allStickers, stickers, search])
@@ -193,7 +194,7 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
               {/* Countries */}
               {isGroupExpanded && (
                 <div className="space-y-2">
-                  {entries.map(({ country, flagUrl, items, owned, total }) => {
+                  {entries.map(({ country, flagUrl, emoji, items, owned, total }) => {
                     const isExpanded = expandedCountries.has(country)
                     const isComplete = owned === total
                     const pct = total > 0 ? Math.round((owned / total) * 100) : 0
@@ -209,7 +210,7 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
                             active:bg-gray-50 transition-colors text-left"
                           onClick={() => toggleCountry(country)}
                         >
-                          {/* Flag image */}
+                          {/* Flag image or special emblem */}
                           <div className="w-8 h-6 flex items-center justify-center flex-shrink-0 overflow-hidden rounded-sm">
                             {flagUrl ? (
                               <img
@@ -218,6 +219,8 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
                                 className="w-full h-full object-cover"
                                 loading="lazy"
                               />
+                            ) : emoji ? (
+                              <span className="text-lg leading-none">{emoji}</span>
                             ) : (
                               <span
                                 className="text-[10px] font-black rounded px-1"
@@ -267,20 +270,6 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
                         {/* Sticker grid */}
                         {isExpanded && (
                           <div className="bg-gray-50 px-3 pt-3 pb-4 border-t border-gray-100">
-                            <div className="flex items-center gap-2 mb-2.5 px-1">
-                              {flagUrl && (
-                                <img
-                                  src={flagUrl}
-                                  alt={country}
-                                  className="w-6 h-4 object-cover rounded-sm flex-shrink-0"
-                                />
-                              )}
-                              <span className="font-bold text-sm" style={{ color: '#00C241' }}>{country}</span>
-                              <div className="flex-1 h-px" style={{ background: '#e5e7eb' }} />
-                              <span className="text-xs font-bold" style={{ color: '#00C241' }}>
-                                {owned}/{total}
-                              </span>
-                            </div>
                             <div className="grid grid-cols-5 gap-1.5">
                               {items.map((s) => (
                                 <StickerCard
