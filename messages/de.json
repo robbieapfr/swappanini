@@ -25,7 +25,10 @@
     "filter_all": "Alle",
     "filter_owned": "Vorhanden",
     "filter_doubles": "Doppelte",
-    "filter_missing": "Fehlend"
+    "filter_missing": "Fehlend",
+    "doubles_hint": "Tippe auf ein Double, um die Menge zu ändern oder zu entfernen.",
+    "doubles_empty_title": "Noch keine Doppelten",
+    "doubles_empty_body": "Füge ein 2. Exemplar hinzu, um es tauschbar zu machen."
   },
   "wants": {
     "title": "Meine Wünsche",

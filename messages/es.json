@@ -25,7 +25,10 @@
     "filter_all": "Todo",
     "filter_owned": "Tengo",
     "filter_doubles": "Repetidos",
-    "filter_missing": "Faltan"
+    "filter_missing": "Faltan",
+    "doubles_hint": "Toca un repetido para ajustar la cantidad o quitarlo.",
+    "doubles_empty_title": "Aún no hay repetidos",
+    "doubles_empty_body": "Añade una 2ª copia de un cromo para poder intercambiarlo."
   },
   "wants": {
     "title": "Mis deseos",

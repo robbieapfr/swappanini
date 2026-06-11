@@ -39,8 +39,18 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
     useUserStickers(initialUserStickers)
 
   const [search, setSearch] = useState('')
+  const [view, setView] = useState<'album' | 'doubles'>('album')
   const [modalSticker, setModalSticker] = useState<Sticker | null>(null)
   const priorityCount = Object.values(stickers).filter((s) => (s.priority ?? 0) > 0).length
+
+  // Flat list of all doubles (quantity >= 2), sorted by group order
+  const doublesList = useMemo(
+    () =>
+      allStickers
+        .filter((s) => (stickers[s.id]?.quantity ?? 0) >= 2)
+        .sort((a, b) => getCountrySortIndex(a.country) - getCountrySortIndex(b.country)),
+    [allStickers, stickers]
+  )
 
   // All groups expanded by default
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
@@ -127,30 +137,78 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
       {/* ── Stats + search ── */}
       <div className="px-4 pt-3 pb-3 bg-white border-b border-gray-100 sticky top-0 z-30">
         <div className="grid grid-cols-3 gap-2 mb-3">
-          <StatPill value={stats.owned} label={t('owned_label')} variant="gray" />
-          <StatPill value={stats.doubles} label={t('doubles_label')} variant="lime" />
+          <StatPill
+            value={stats.owned}
+            label={t('owned_label')}
+            variant="gray"
+            onClick={() => setView('album')}
+            active={view === 'album'}
+          />
+          <StatPill
+            value={stats.doubles}
+            label={t('doubles_label')}
+            variant="lime"
+            onClick={() => setView('doubles')}
+            active={view === 'doubles'}
+          />
           <StatPill value={`${stats.pct}%`} label={t('complete_label')} variant="green" />
         </div>
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            width="16" height="16" viewBox="0 0 24 24" fill="none"
-          >
-            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
-            <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('search_placeholder')}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm
-              outline-none focus:border-gray-400 transition-colors bg-white"
-          />
-        </div>
+        {view === 'album' && (
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              width="16" height="16" viewBox="0 0 24 24" fill="none"
+            >
+              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+              <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('search_placeholder')}
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm
+                outline-none focus:border-gray-400 transition-colors bg-white"
+            />
+          </div>
+        )}
       </div>
 
-      {/* ── Country list grouped by WC group ── */}
+      {/* ── Doubles flat view ── */}
+      {view === 'doubles' ? (
+        <div className="flex-1 pb-6 px-4 pt-4">
+          {doublesList.length === 0 ? (
+            <div className="rounded-2xl px-5 py-10 text-center" style={{ background: '#f9fafb' }}>
+              <p className="text-3xl mb-2">📭</p>
+              <p className="font-black text-sm" style={{ color: '#1B3B1A' }}>
+                {t('doubles_empty_title')}
+              </p>
+              <p className="text-xs text-gray-400 font-medium mt-1">
+                {t('doubles_empty_body')}
+              </p>
+            </div>
+          ) : (
+            <>
+              <p className="text-xs text-gray-400 font-medium mb-3">
+                {t('doubles_hint')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {doublesList.map((s) => (
+                  <div key={s.id} className="flex-shrink-0" style={{ width: 'calc((100vw - 56px) / 5)', maxWidth: '80px' }}>
+                    <StickerCard
+                      sticker={s}
+                      userSticker={stickers[s.id]}
+                      onTap={openModal}
+                      onLongPress={openModal}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+      /* ── Country list grouped by WC group ── */
       <div className="flex-1 pb-6 px-3 pt-3">
         {grouped.map(({ groupId, groupLabel, entries }) => {
           const isGroupExpanded = expandedGroups.has(groupId)
@@ -292,6 +350,7 @@ export function CollectionGrid({ allStickers, initialUserStickers }: CollectionG
           )
         })}
       </div>
+      )}
 
       {/* ── Modal ── */}
       {modalSticker && (
@@ -314,10 +373,14 @@ function StatPill({
   value,
   label,
   variant,
+  onClick,
+  active,
 }: {
   value: string | number
   label: string
   variant: 'gray' | 'lime' | 'green'
+  onClick?: () => void
+  active?: boolean
 }) {
   const styles = {
     gray:  { bg: '#f3f4f6', color: '#1B3B1A', border: '#e5e7eb' },
@@ -325,11 +388,18 @@ function StatPill({
     green: { bg: '#00C241', color: '#ffffff', border: '#00C241' },
   }
   const s = styles[variant]
+  const Tag = onClick ? 'button' : 'div'
 
   return (
-    <div
-      className="flex flex-col items-center justify-center py-3 rounded-2xl border"
-      style={{ background: s.bg, borderColor: s.border }}
+    <Tag
+      onClick={onClick}
+      className="flex flex-col items-center justify-center py-3 rounded-2xl border transition-all w-full"
+      style={{
+        background: s.bg,
+        borderColor: active ? '#1B3B1A' : s.border,
+        borderWidth: active ? 2 : 1,
+        cursor: onClick ? 'pointer' : 'default',
+      }}
     >
       <span
         className="font-display text-2xl font-black leading-none"
@@ -343,6 +413,6 @@ function StatPill({
       >
         {label}
       </span>
-    </div>
+    </Tag>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { proposeSwap } from '@/lib/swaps/actions'
+import { MAX_SWAP_DIFFERENTIAL } from '@/lib/swaps/constants'
 import { getDisplayCode } from '@/lib/flags'
 import type { SwapItem, MatchReceiver } from '@/lib/matching/queries'
 
@@ -27,10 +28,13 @@ export function ProposePageClient({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  const [giveList, setGiveList] = useState<SwapItem[]>(initialGive)
-  const [receiveList, setReceiveList] = useState<SwapItem[]>(initialReceive)
-  const [removedGive, setRemovedGive] = useState<SwapItem[]>([])
-  const [removedReceive, setRemovedReceive] = useState<SwapItem[]>([])
+  // Open already balanced: keep the smaller side whole, trim the larger to
+  // (smaller + MAX_SWAP_DIFFERENTIAL); the overflow stays available in the picker.
+  const balancedTarget = Math.min(initialGive.length, initialReceive.length) + MAX_SWAP_DIFFERENTIAL
+  const [giveList, setGiveList] = useState<SwapItem[]>(() => initialGive.slice(0, balancedTarget))
+  const [receiveList, setReceiveList] = useState<SwapItem[]>(() => initialReceive.slice(0, balancedTarget))
+  const [removedGive, setRemovedGive] = useState<SwapItem[]>(() => initialGive.slice(balancedTarget))
+  const [removedReceive, setRemovedReceive] = useState<SwapItem[]>(() => initialReceive.slice(balancedTarget))
   const [showGivePicker, setShowGivePicker] = useState(false)
   const [showReceivePicker, setShowReceivePicker] = useState(false)
   const [mode, setMode] = useState<'mail' | 'inperson'>('mail')
@@ -79,10 +83,45 @@ export function ProposePageClient({
     )
   }
 
+  const giveTotal = giveList.reduce((n, s) => n + s.selectedQty, 0)
+  const receiveTotal = receiveList.reduce((n, s) => n + s.selectedQty, 0)
+  const differential = Math.abs(giveTotal - receiveTotal)
+  const overDiff = differential > MAX_SWAP_DIFFERENTIAL
+
+  // Trim the larger side down so both totals are within MAX_SWAP_DIFFERENTIAL.
+  function balance() {
+    const target = Math.min(giveTotal, receiveTotal) + MAX_SWAP_DIFFERENTIAL
+    const trim = (list: SwapItem[], setList: (l: SwapItem[]) => void, removed: SwapItem[], setRemoved: (l: SwapItem[]) => void) => {
+      let total = list.reduce((n, s) => n + s.selectedQty, 0)
+      if (total <= target) return
+      const next = [...list]
+      const pushed: SwapItem[] = []
+      while (total > target && next.length > 0) {
+        const last = next[next.length - 1]
+        const canDrop = Math.min(last.selectedQty, total - target)
+        last.selectedQty -= canDrop
+        total -= canDrop
+        if (last.selectedQty <= 0) {
+          pushed.push(next.pop()!)
+        }
+      }
+      setList(next)
+      if (pushed.length) setRemoved([...removed, ...pushed])
+    }
+    if (giveTotal > receiveTotal) trim(giveList, setGiveList, removedGive, setRemovedGive)
+    else trim(receiveList, setReceiveList, removedReceive, setRemovedReceive)
+  }
+
   function handleSubmit() {
     setError(null)
+    if (overDiff) {
+      setError(`L'écart entre les deux côtés ne peut pas dépasser ${MAX_SWAP_DIFFERENTIAL} vignettes. Utilise « Équilibrer ».`)
+      return
+    }
     startTransition(async () => {
-      const result = await proposeSwap(receiverId, message || undefined, mode)
+      const give = giveList.map((s) => ({ sticker_id: s.id, quantity: s.selectedQty }))
+      const receive = receiveList.map((s) => ({ sticker_id: s.id, quantity: s.selectedQty }))
+      const result = await proposeSwap(receiverId, give, receive, message || undefined, mode)
       if (result.error) {
         setError(result.error)
         return
@@ -210,9 +249,33 @@ export function ProposePageClient({
         className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-3 bg-white"
         style={{ borderTop: '1px solid #f3f4f6' }}
       >
+        {/* Balance summary */}
+        <div className="flex items-center justify-between mb-2.5 text-sm">
+          <span className="font-bold" style={{ color: '#1B3B1A' }}>
+            Tu donnes <strong>{giveTotal}</strong> · Tu reçois <strong>{receiveTotal}</strong>
+          </span>
+          {overDiff ? (
+            <button
+              onClick={balance}
+              className="text-xs font-black px-3 py-1.5 rounded-full"
+              style={{ background: '#FEF3C7', color: '#B45309' }}
+            >
+              ⚖️ Équilibrer
+            </button>
+          ) : (
+            <span className="text-xs font-bold" style={{ color: '#00C241' }}>✓ Équilibré</span>
+          )}
+        </div>
+
+        {overDiff && (
+          <p className="text-xs font-medium mb-2" style={{ color: '#B45309' }}>
+            L&apos;écart ({differential}) dépasse {MAX_SWAP_DIFFERENTIAL}. Réduis un côté ou appuie sur « Équilibrer ».
+          </p>
+        )}
+
         <button
           onClick={handleSubmit}
-          disabled={isPending || (giveList.length === 0 && receiveList.length === 0)}
+          disabled={isPending || overDiff || (giveList.length === 0 && receiveList.length === 0)}
           className="w-full py-4 rounded-2xl font-black text-base
             transition-all active:scale-[0.98] disabled:opacity-50"
           style={{ background: '#00C241', color: 'white' }}

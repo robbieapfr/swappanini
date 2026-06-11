@@ -71,8 +71,30 @@ export default async function SwapPage({
     }[] | null
   }
 
+  // Fetch the cards being exchanged
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: itemsRaw } = await (supabase.from('swap_items') as any)
+    .select('sticker_id, from_user_id, quantity, stickers(id, number, name, code, country)')
+    .eq('swap_id', swapId) as {
+    data: {
+      sticker_id: number
+      from_user_id: string
+      quantity: number
+      stickers: { id: number; number: number; name: string | null; code: string; country: string } | null
+    }[] | null
+  }
+
   const isInitiator = swap.initiator_id === user.id
   const otherUser = isInitiator ? swap.receiver : swap.initiator
+
+  // Split into what I give (from me) and what I receive (from the other party).
+  const items = (itemsRaw ?? []).filter((i) => i.stickers)
+  const iGive = items
+    .filter((i) => i.from_user_id === user.id)
+    .map((i) => ({ ...i.stickers!, quantity: i.quantity }))
+  const iReceive = items
+    .filter((i) => i.from_user_id !== user.id)
+    .map((i) => ({ ...i.stickers!, quantity: i.quantity }))
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -100,6 +122,8 @@ export default async function SwapPage({
         currentUserId={user.id}
         locale={locale}
         isInitiator={isInitiator}
+        iGive={iGive}
+        iReceive={iReceive}
       />
     </div>
   )

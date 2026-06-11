@@ -31,7 +31,10 @@
     "filter_all": "Tout",
     "filter_owned": "Possédées",
     "filter_doubles": "Doublons",
-    "filter_missing": "Manquantes"
+    "filter_missing": "Manquantes",
+    "doubles_hint": "Appuie sur un doublon pour ajuster la quantité ou le retirer.",
+    "doubles_empty_title": "Pas encore de doublons",
+    "doubles_empty_body": "Ajoute une 2ᵉ vignette identique pour la rendre échangeable."
   },
   "wants": {
     "title": "Mes envies",

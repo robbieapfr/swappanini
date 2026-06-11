@@ -3,12 +3,22 @@
 import { useState, useRef, useEffect, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import { sendMessage, transitionSwap } from '@/lib/swaps/actions'
+import { getDisplayCode } from '@/lib/flags'
 
 interface Message {
   id: string
   sender_id: string
   content: string
   created_at: string
+}
+
+interface SwapCard {
+  id: number
+  number: number
+  name: string | null
+  code: string
+  country: string
+  quantity: number
 }
 
 interface SwapData {
@@ -27,6 +37,8 @@ interface Props {
   currentUserId: string
   locale: string
   isInitiator: boolean
+  iGive: SwapCard[]
+  iReceive: SwapCard[]
 }
 
 export function SwapThread({
@@ -35,6 +47,8 @@ export function SwapThread({
   messages: initialMessages,
   currentUserId,
   isInitiator,
+  iGive,
+  iReceive,
 }: Props) {
   const t = useTranslations('swap')
   const [messages, setMessages] = useState(initialMessages)
@@ -76,8 +90,19 @@ export function SwapThread({
 
   const isActive = !['completed', 'refused', 'cancelled'].includes(swap.status)
 
+  const giveTotal = iGive.reduce((n, c) => n + c.quantity, 0)
+  const receiveTotal = iReceive.reduce((n, c) => n + c.quantity, 0)
+
   return (
     <div className="flex flex-col flex-1">
+      {/* ── Exchanged cards summary ── */}
+      {(iGive.length > 0 || iReceive.length > 0) && (
+        <div className="bg-white border-b border-gray-100 px-4 py-3 space-y-3">
+          <SwapSide title={`${t('gives_label')} · ${giveTotal}`} cards={iGive} tint="#fee2e2" textColor="#991b1b" />
+          <SwapSide title={`${t('gets_label')} · ${receiveTotal}`} cards={iReceive} tint="#dcfce7" textColor="#166534" />
+        </div>
+      )}
+
       {/* ── Action bar ── */}
       {isActive && (
         <div className="bg-white border-b border-gray-100 px-4 py-3">
@@ -210,6 +235,42 @@ export function SwapThread({
           >
             ↑
           </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SwapSide({
+  title,
+  cards,
+  tint,
+  textColor,
+}: {
+  title: string
+  cards: SwapCard[]
+  tint: string
+  textColor: string
+}) {
+  return (
+    <div>
+      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5">
+        {title}
+      </p>
+      {cards.length === 0 ? (
+        <p className="text-xs text-gray-300 font-medium">—</p>
+      ) : (
+        <div className="flex flex-wrap gap-1.5">
+          {cards.map((c) => (
+            <span
+              key={c.id}
+              className="text-[11px] font-black px-2 py-1 rounded-lg"
+              style={{ background: tint, color: textColor }}
+            >
+              {getDisplayCode(c.country, c.code)}·{c.number}
+              {c.quantity > 1 && <span className="ml-1 opacity-70">×{c.quantity}</span>}
+            </span>
+          ))}
         </div>
       )}
     </div>

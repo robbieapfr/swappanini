@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { getUserEmail } from '@/lib/supabase/admin'
+import { MAX_SWAP_DIFFERENTIAL, type SwapItemInput } from '@/lib/swaps/constants'
 import {
   sendSwapProposalEmail,
   sendSwapAcceptedEmail,
@@ -20,10 +21,14 @@ export type SwapStatus =
   | 'cancelled'
 
 /**
- * Propose a new swap between current user (initiator) and another user (receiver)
+ * Propose a new swap between current user (initiator) and another user (receiver).
+ * Only doubles can be offered, and the give/receive totals must stay within
+ * MAX_SWAP_DIFFERENTIAL of each other.
  */
 export async function proposeSwap(
   receiverId: string,
+  give: SwapItemInput[],
+  receive: SwapItemInput[],
   message?: string,
   swapMode: 'mail' | 'inperson' = 'mail'
 ): Promise<{ swapId: string | null; error: string | null }> {
@@ -32,6 +37,40 @@ export async function proposeSwap(
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return { swapId: null, error: 'Unauthenticated' }
+
+  const cleanGive = give.filter((i) => i.quantity > 0)
+  const cleanReceive = receive.filter((i) => i.quantity > 0)
+  const giveTotal = cleanGive.reduce((n, i) => n + i.quantity, 0)
+  const receiveTotal = cleanReceive.reduce((n, i) => n + i.quantity, 0)
+
+  if (giveTotal === 0 || receiveTotal === 0) {
+    return { swapId: null, error: 'Chaque côté doit contenir au moins une vignette.' }
+  }
+  if (Math.abs(giveTotal - receiveTotal) > MAX_SWAP_DIFFERENTIAL) {
+    return {
+      swapId: null,
+      error: `L'écart entre les deux côtés ne peut pas dépasser ${MAX_SWAP_DIFFERENTIAL} vignettes.`,
+    }
+  }
+
+  // Validate that the offered cards are really doubles owned by the right party.
+  const giveIds = cleanGive.map((i) => i.sticker_id)
+  const receiveIds = cleanReceive.map((i) => i.sticker_id)
+  const [{ data: myRows }, { data: theirRows }] = await Promise.all([
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.from('user_stickers') as any)
+      .select('sticker_id, quantity').eq('user_id', user.id).in('sticker_id', giveIds.length ? giveIds : [-1]) as Promise<{ data: { sticker_id: number; quantity: number }[] | null }>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.from('user_stickers') as any)
+      .select('sticker_id, quantity').eq('user_id', receiverId).in('sticker_id', receiveIds.length ? receiveIds : [-1]) as Promise<{ data: { sticker_id: number; quantity: number }[] | null }>,
+  ])
+  const myQty = new Map((myRows ?? []).map((r) => [r.sticker_id, r.quantity]))
+  const theirQty = new Map((theirRows ?? []).map((r) => [r.sticker_id, r.quantity]))
+  const validGive = cleanGive.every((i) => (myQty.get(i.sticker_id) ?? 0) - 1 >= i.quantity)
+  const validReceive = cleanReceive.every((i) => (theirQty.get(i.sticker_id) ?? 0) - 1 >= i.quantity)
+  if (!validGive || !validReceive) {
+    return { swapId: null, error: 'Seuls les doublons peuvent être échangés.' }
+  }
 
   // Create swap
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,6 +82,21 @@ export async function proposeSwap(
   if (swapError || !swap) {
     console.error(swapError)
     return { swapId: null, error: 'Failed to create swap' }
+  }
+
+  // Persist the items (give = from me, receive = from the other party).
+  const itemRows = [
+    ...cleanGive.map((i) => ({ swap_id: swap.id, sticker_id: i.sticker_id, from_user_id: user.id, quantity: i.quantity })),
+    ...cleanReceive.map((i) => ({ swap_id: swap.id, sticker_id: i.sticker_id, from_user_id: receiverId, quantity: i.quantity })),
+  ]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: itemsError } = await (supabase.from('swap_items') as any).insert(itemRows)
+  if (itemsError) {
+    console.error(itemsError)
+    // Roll back the empty swap so we don't leave a swap with no items.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('swaps') as any).delete().eq('id', swap.id)
+    return { swapId: null, error: 'Failed to save swap items' }
   }
 
   // Send optional message
@@ -184,10 +238,25 @@ export async function transitionSwap(
 
   if (!newStatus) return { error: 'Invalid transition' }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase.from('swaps') as any)
-    .update({ status: newStatus, updated_at: new Date().toISOString() })
-    .eq('id', swapId)
+  if (newStatus === 'completed') {
+    // Atomically move the cards between both collections + mark completed.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: rpcError } = await (supabase.rpc as any)('apply_swap_completion', { p_swap_id: swapId })
+    if (rpcError) {
+      console.error('apply_swap_completion failed', rpcError)
+      return { error: 'Failed to complete swap' }
+    }
+    // Both users' collections changed — refresh the relevant pages.
+    revalidatePath('/collection')
+    revalidatePath('/wants')
+    revalidatePath('/home')
+    revalidatePath('/playground')
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('swaps') as any)
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .eq('id', swapId)
+  }
 
   revalidatePath(`/inbox/${swapId}`)
   revalidatePath('/inbox')

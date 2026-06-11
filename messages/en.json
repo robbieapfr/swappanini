@@ -31,7 +31,10 @@
     "filter_all": "All",
     "filter_owned": "Owned",
     "filter_doubles": "Doubles",
-    "filter_missing": "Missing"
+    "filter_missing": "Missing",
+    "doubles_hint": "Tap a double to adjust its quantity or remove it.",
+    "doubles_empty_title": "No doubles yet",
+    "doubles_empty_body": "Add a 2nd copy of a sticker to make it swappable."
   },
   "wants": {
     "title": "My Wants",
