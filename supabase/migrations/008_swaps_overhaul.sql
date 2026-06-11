@@ -80,6 +80,9 @@ $$;
 
 -- 4. Rank matches by realistic swap size: balanced tradeable pairs
 --    (LEAST of give/get) weigh most, so big mutual swaps surface first.
+--    DROP first because the return row type changes (CREATE OR REPLACE
+--    cannot alter an existing function's OUT parameters).
+DROP FUNCTION IF EXISTS get_matches(uuid);
 CREATE OR REPLACE FUNCTION get_matches(me uuid)
 RETURNS TABLE (
   id                   uuid,
