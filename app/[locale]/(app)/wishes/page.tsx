@@ -74,33 +74,46 @@ export default async function WantsPage({
     initialUserStickers[row.sticker_id] = { quantity: row.quantity, priority: row.priority }
   }
 
-  // ── Top 10 plus recherchés (most prioritized community-wide) ──
-  const priorityCountMap = new Map<number, number>()
-  for (const row of allPriorities ?? []) {
-    priorityCountMap.set(row.sticker_id, (priorityCountMap.get(row.sticker_id) ?? 0) + 1)
-  }
-  const topWantedIds = new Set(
-    Array.from(priorityCountMap.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([id]) => id)
+  const allStickers = allStickersRaw ?? []
+
+  // Stickers the current user already owns — excluded from both tops, since
+  // this is the "wishes" page (only cards still to get are relevant here).
+  const myOwnedIds = new Set(
+    (userStickersRaw ?? []).filter((r) => r.quantity >= 1).map((r) => r.sticker_id)
   )
 
-  // ── Top 10 plus rares (fewest owners, at least 1) ──
+  // How many collectors own each sticker (0 when nobody owns it yet).
   const ownerCountMap = new Map<number, number>()
   for (const row of allOwned ?? []) {
     ownerCountMap.set(row.sticker_id, (ownerCountMap.get(row.sticker_id) ?? 0) + 1)
   }
-  const topRareIds = new Set(
-    Array.from(ownerCountMap.entries())
-      .sort((a, b) => a[1] - b[1])
-      .slice(0, 10)
-      .map(([id]) => id)
-  )
 
-  const allStickers = allStickersRaw ?? []
-  const topWanted = allStickers.filter((s) => topWantedIds.has(s.id))
-  const topRare = allStickers.filter((s) => topRareIds.has(s.id))
+  // How many collectors pinned each sticker as a priority.
+  const priorityCountMap = new Map<number, number>()
+  for (const row of allPriorities ?? []) {
+    priorityCountMap.set(row.sticker_id, (priorityCountMap.get(row.sticker_id) ?? 0) + 1)
+  }
+
+  const missingForMe = allStickers.filter((s) => !myOwnedIds.has(s.id))
+
+  // ── Top 10 most wanted: missing cards most pinned by the community ──
+  const topWanted = [...missingForMe]
+    .sort(
+      (a, b) =>
+        (priorityCountMap.get(b.id) ?? 0) - (priorityCountMap.get(a.id) ?? 0) ||
+        a.number - b.number
+    )
+    .filter((s) => (priorityCountMap.get(s.id) ?? 0) > 0)
+    .slice(0, 10)
+
+  // ── Top 10 rarest: missing cards the fewest collectors own (0 owners first) ──
+  const topRare = [...missingForMe]
+    .sort(
+      (a, b) =>
+        (ownerCountMap.get(a.id) ?? 0) - (ownerCountMap.get(b.id) ?? 0) ||
+        a.number - b.number
+    )
+    .slice(0, 10)
 
   return (
     <div className="min-h-screen bg-white">
