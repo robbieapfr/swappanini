@@ -22,6 +22,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+dev.log
+dev-err.log
+
+# local working files (not part of the app)
+Stickers photos/
+swap26-mockup-v1-clean.jpg
 
 # local env files
 .env*.local
