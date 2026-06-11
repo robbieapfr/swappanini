@@ -146,7 +146,8 @@
     "already_account": "Already have an account?",
     "forgot_password": "Forgot password?",
     "or": "or",
-    "continue_google": "Continue with Google"
+    "continue_google": "Continue with Google",
+    "verify_email_notice": "Account created! Check your inbox and click the confirmation link before signing in."
   },
   "sticker": {
     "quantity_label": "Quantity",

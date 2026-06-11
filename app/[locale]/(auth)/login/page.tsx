@@ -16,10 +16,10 @@ export default async function LoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ error?: string; redirectTo?: string }>
+  searchParams: Promise<{ error?: string; redirectTo?: string; notice?: string }>
 }) {
   const { locale } = await params
-  const { error, redirectTo } = await searchParams
+  const { error, redirectTo, notice } = await searchParams
   setRequestLocale(locale as Locale)
 
   const t = await getTranslations('auth')
@@ -27,6 +27,13 @@ export default async function LoginPage({
   return (
     <>
       <h1 className="font-display text-2xl text-gray-900 mb-6">{t('login_title')}</h1>
+
+      {/* Success notice (e.g. after sign-up) */}
+      {notice === 'verify-email' && (
+        <div className="mb-4 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-sm font-medium" style={{ color: '#1B7A2E' }}>
+          {t('verify_email_notice')}
+        </div>
+      )}
 
       {/* Error banner */}
       {error && (

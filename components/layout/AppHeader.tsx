@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { LanguageToggle } from './LanguageToggle'
 
 interface AppHeaderProps {
   locale: string
@@ -39,14 +40,17 @@ export function AppHeader({ locale, pseudo, title, leftSlot }: AppHeaderProps) {
         </h1>
       )}
 
-      {/* Right: SWAP'WC26 logo */}
-      <Link href={`/${locale}/home`} className="flex items-center gap-1.5">
-        <span className="font-display text-xl font-black tracking-tight">
-          <span style={{ color: '#AAFF00' }}>SWAP</span>
-          <span style={{ color: '#00C241' }}>&apos;WC26</span>
-        </span>
-        <CoinIcon />
-      </Link>
+      {/* Right: language toggle + SWAP'WC26 logo */}
+      <div className="flex items-center gap-2">
+        <LanguageToggle locale={locale} variant="ghost" />
+        <Link href={`/${locale}/home`} className="flex items-center gap-1.5">
+          <span className="font-display text-xl font-black tracking-tight">
+            <span style={{ color: '#AAFF00' }}>SWAP</span>
+            <span style={{ color: '#00C241' }}>&apos;WC26</span>
+          </span>
+          <CoinIcon />
+        </Link>
+      </div>
     </div>
   )
 }

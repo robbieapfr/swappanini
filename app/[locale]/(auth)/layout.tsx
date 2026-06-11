@@ -1,8 +1,22 @@
 import Link from 'next/link'
+import { LanguageToggle } from '@/components/layout/LanguageToggle'
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default async function AuthLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Language toggle top-right */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageToggle locale={locale} variant="pill" />
+      </div>
+
       {/* Header minimal */}
       <header className="pt-8 pb-2 text-center">
         <Link href="/" className="font-display text-3xl font-black tracking-tight">

@@ -18,6 +18,10 @@ export interface LeaderboardUser {
   swap_count: number
   badge_count: number
   friendship_status: 'none' | 'pending' | 'accepted' | 'declined'
+  /** absolute leaderboard rank (1-based) */
+  rank: number
+  /** true for the current user's own row */
+  is_me?: boolean
   /** true if I sent the request (pending outgoing) */
   i_requested?: boolean
 }

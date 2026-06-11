@@ -146,7 +146,8 @@
     "already_account": "Déjà un compte ?",
     "forgot_password": "Mot de passe oublié ?",
     "or": "ou",
-    "continue_google": "Continuer avec Google"
+    "continue_google": "Continuer avec Google",
+    "verify_email_notice": "Compte créé ! Vérifie ta boîte mail et clique sur le lien de confirmation avant de te connecter."
   },
   "sticker": {
     "quantity_label": "Quantité",

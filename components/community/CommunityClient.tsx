@@ -68,9 +68,21 @@ export function CommunityClient({
 
       {/* ── Content ── */}
       <div className="px-4 py-4 space-y-3">
-        {tab === 'leaderboard' && leaderboard.map((u, i) => (
-          <UserCard key={u.id} user={u} rank={i + 1} mode="leaderboard" />
-        ))}
+        {tab === 'leaderboard' && buildLeaderboardWindow(leaderboard).map((entry, i) =>
+          entry === 'gap' ? (
+            <div key={`gap-${i}`} className="flex justify-center py-1 text-gray-300 font-black tracking-widest select-none">
+              · · ·
+            </div>
+          ) : (
+            <UserCard
+              key={entry.id}
+              user={entry}
+              rank={entry.rank}
+              isMe={entry.is_me}
+              mode="leaderboard"
+            />
+          )
+        )}
 
         {tab === 'friends' && (
           friends.length === 0 ? (
@@ -102,21 +114,37 @@ export function CommunityClient({
   )
 }
 
+// Top 3 + a window around the current user (3 before / 3 after). When the user
+// sits in (or near) the top, the whole top slice is shown continuously instead.
+function buildLeaderboardWindow(
+  rows: LeaderboardUser[]
+): (LeaderboardUser | 'gap')[] {
+  if (rows.length <= 12) return rows
+  const meIdx = rows.findIndex((u) => u.is_me)
+  if (meIdx < 10) return rows.slice(0, Math.max(10, meIdx + 4))
+  return [
+    ...rows.slice(0, 3),
+    'gap' as const,
+    ...rows.slice(meIdx - 3, meIdx + 4),
+  ]
+}
+
 // ── UserCard ──────────────────────────────────────────────────
 function UserCard({
   user,
   rank,
   mode,
+  isMe = false,
 }: {
   user: LeaderboardUser
   rank: number
   mode: 'leaderboard' | 'friends'
+  isMe?: boolean
 }) {
   const [isPending, startTransition] = useTransition()
   const [localStatus, setLocalStatus] = useState(user.friendship_status)
   const [iRequested, setIRequested] = useState(user.i_requested ?? false)
 
-  const initial = user.pseudo[0].toUpperCase()
   const location = [user.city, user.country].filter(Boolean).join(', ')
   const pct = Number(user.collection_pct).toFixed(1)
 
@@ -135,7 +163,14 @@ function UserCard({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4">
+    <div
+      className="rounded-2xl p-4"
+      style={
+        isMe
+          ? { background: '#f0fff4', border: '2px solid #00C241' }
+          : { background: 'white', border: '1px solid #f3f4f6' }
+      }
+    >
       <div className="flex items-start gap-3">
         {/* Rank avatar */}
         <div
@@ -163,8 +198,16 @@ function UserCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="font-black text-sm truncate" style={{ color: '#1B3B1A' }}>
+              <p className="font-black text-sm truncate flex items-center gap-1.5" style={{ color: '#1B3B1A' }}>
                 {user.pseudo}
+                {isMe && (
+                  <span
+                    className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: '#00C241', color: 'white' }}
+                  >
+                    TOI
+                  </span>
+                )}
               </p>
               {location && (
                 <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
@@ -176,15 +219,17 @@ function UserCard({
               )}
             </div>
 
-            {/* Action button */}
-            <ActionButton
-              mode={mode}
-              status={localStatus}
-              iRequested={iRequested}
-              isPending={isPending}
-              onAdd={handleAdd}
-              onRemove={handleRemove}
-            />
+            {/* Action button — not shown on your own row */}
+            {!isMe && (
+              <ActionButton
+                mode={mode}
+                status={localStatus}
+                iRequested={iRequested}
+                isPending={isPending}
+                onAdd={handleAdd}
+                onRemove={handleRemove}
+              />
+            )}
           </div>
 
           {/* Progress bar + % */}

@@ -31,7 +31,7 @@ export async function register(formData: FormData) {
   const password = formData.get('password') as string
   const locale = (formData.get('locale') as string) || defaultLocale
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -43,7 +43,14 @@ export async function register(formData: FormData) {
     redirect(`/${locale}/register?error=${encodeURIComponent(error.message)}`)
   }
 
-  // Redirect to onboarding — user profile creation happens there
+  // When email confirmation is enabled, signUp returns no session — the user
+  // must click the link in their inbox before they can log in. Send them to
+  // login with a notice instead of onboarding (which would bounce them).
+  if (!data.session) {
+    redirect(`/${locale}/login?notice=verify-email`)
+  }
+
+  // Auto-confirm enabled → proceed straight to onboarding.
   redirect(`/${locale}/onboarding`)
 }
 

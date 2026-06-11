@@ -129,7 +129,8 @@
     "already_account": "Schon ein Konto?",
     "forgot_password": "Passwort vergessen?",
     "or": "oder",
-    "continue_google": "Mit Google fortfahren"
+    "continue_google": "Mit Google fortfahren",
+    "verify_email_notice": "Konto erstellt! Prüfe dein Postfach und klicke auf den Bestätigungslink, bevor du dich anmeldest."
   },
   "sticker": {
     "quantity_label": "Anzahl",

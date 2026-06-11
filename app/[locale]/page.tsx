@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { locales, type Locale } from '@/i18n'
 import Link from 'next/link'
 import Image from 'next/image'
+import { LanguageToggle } from '@/components/layout/LanguageToggle'
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
@@ -35,13 +36,16 @@ export default async function LandingPage({
             Swappanini
           </span>
         </div>
-        <Link
-          href={`/${locale}/login`}
-          className="text-sm font-black px-4 py-2 rounded-full border-2 transition-all active:scale-[0.97]"
-          style={{ borderColor: '#1B3B1A', color: '#1B3B1A' }}
-        >
-          Se connecter
-        </Link>
+        <div className="flex items-center gap-2">
+          <LanguageToggle locale={locale} variant="pill" />
+          <Link
+            href={`/${locale}/login`}
+            className="text-sm font-black px-4 py-2 rounded-full border-2 transition-all active:scale-[0.97]"
+            style={{ borderColor: '#1B3B1A', color: '#1B3B1A' }}
+          >
+            Se connecter
+          </Link>
+        </div>
       </nav>
 
       {/* ── Hero ── */}
