@@ -1,20 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 export default function UpdatePasswordPage({
   params,
 }: {
   params: { locale: string }
 }) {
+  const locale = params.locale ?? 'fr'
   const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const locale = params.locale ?? 'fr'
+  const [sessionReady, setSessionReady] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSessionReady(!!session)
+    })
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +49,32 @@ export default function UpdatePasswordPage({
     }
 
     router.push(`/${locale}/home`)
+  }
+
+  if (sessionReady === null) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <p className="text-sm text-gray-400">Chargement…</p>
+      </div>
+    )
+  }
+
+  if (sessionReady === false) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h1 className="font-display text-2xl text-gray-900 mb-2">Lien expiré</h1>
+        <p className="text-sm text-gray-400">
+          Ce lien de réinitialisation a expiré ou a déjà été utilisé.
+        </p>
+        <Link
+          href={`/${locale}/forgot-password`}
+          className="w-full py-3.5 rounded-xl font-black text-sm text-center text-white transition-all active:scale-[0.98]"
+          style={{ background: '#00C241' }}
+        >
+          Demander un nouveau lien
+        </Link>
+      </div>
+    )
   }
 
   return (
