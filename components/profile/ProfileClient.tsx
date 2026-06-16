@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/client'
 import { updateProfile } from '@/lib/profile/actions'
 import { COUNTRIES } from '@/lib/countries'
 import { CLUB_LEAGUES } from '@/lib/clubs'
-import { computeAge } from '@/lib/age'
 
 import { CommunityClient } from '@/components/community/CommunityClient'
 import { AvatarUploader } from './AvatarUploader'
@@ -282,27 +281,30 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
     })
   }
 
-  const swapModeKey = SWAP_MODES.find((m) => m.value === (profile?.swap_preference ?? 'both'))?.key
-  const swapModeLabel = swapModeKey ? t(swapModeKey) : '—'
-  const countryLabel = COUNTRIES.find((c) => c.code === (profile?.country ?? ''))?.name ?? profile?.country ?? '—'
-  const ageNow = computeAge(profile?.birth_year)
-  const birthYearValue =
-    profile?.birth_year != null
-      ? ageNow != null
-        ? `${profile.birth_year} · ${t('years_old', { count: ageNow })}`
-        : String(profile.birth_year)
-      : '—'
-
   if (!editing) {
+    // Collapsed: only the photo + username are ever visible. Everything else
+    // is revealed by tapping "Edit".
     return (
       <div className="rounded-2xl border border-gray-100 px-4 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-display text-lg font-black" style={{ color: '#00C241' }}>
-            {t('title')}
-          </h2>
+        {success && (
+          <p className="text-xs font-bold mb-3" style={{ color: '#00C241' }}>
+            {t('updated')}
+          </p>
+        )}
+
+        <div className="flex items-center gap-3">
+          <AvatarUploader
+            compact
+            userId={userId}
+            avatarUrl={profile?.avatar_url ?? null}
+            pseudo={profile?.pseudo ?? '?'}
+          />
+          <p className="flex-1 min-w-0 font-black text-base truncate" style={{ color: '#1B3B1A' }}>
+            @{profile?.pseudo ?? '—'}
+          </p>
           <button
             onClick={() => { setSuccess(false); setEditing(true) }}
-            className="flex items-center gap-1.5 text-xs font-black px-3 py-1.5 rounded-full transition-all active:scale-[0.97]"
+            className="flex items-center gap-1.5 text-xs font-black px-3 py-1.5 rounded-full transition-all active:scale-[0.97] flex-shrink-0"
             style={{ background: '#f3f4f6', color: '#374151' }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -313,34 +315,6 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
             </svg>
             {t('edit')}
           </button>
-        </div>
-
-        {success && (
-          <p className="text-xs font-bold mb-3" style={{ color: '#00C241' }}>
-            {t('updated')}
-          </p>
-        )}
-
-        {/* Avatar */}
-        <div className="mb-4">
-          <AvatarUploader
-            userId={userId}
-            avatarUrl={profile?.avatar_url ?? null}
-            pseudo={profile?.pseudo ?? '?'}
-          />
-        </div>
-
-        <div className="space-y-0">
-          <ProfileRow label={t('label_pseudo')} value={`@${profile?.pseudo ?? '—'}`} />
-          <ProfileRow label={t('label_firstname')} value={profile?.first_name ?? '—'} />
-          <ProfileRow label={t('label_lastname')} value={profile?.last_name ?? '—'} />
-          <ProfileRow label={t('label_birthyear')} value={birthYearValue} />
-          <ProfileRow label={t('label_country')} value={countryLabel} />
-          <ProfileRow label={t('label_city')} value={profile?.city ?? '—'} />
-          {profile?.supported_club && (
-            <ProfileRow label={t('label_club')} value={profile.supported_club} />
-          )}
-          <ProfileRow label={t('label_swapmode')} value={swapModeLabel} />
         </div>
       </div>
     )
@@ -359,6 +333,13 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
           {t('cancel')}
         </button>
       </div>
+
+      {/* Photo */}
+      <AvatarUploader
+        userId={userId}
+        avatarUrl={profile?.avatar_url ?? null}
+        pseudo={profile?.pseudo ?? '?'}
+      />
 
       {/* Pseudo */}
       <div className="flex flex-col gap-1.5">
@@ -514,15 +495,6 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
       >
         {isPending ? t('saving') : t('save')}
       </button>
-    </div>
-  )
-}
-
-function ProfileRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-      <span className="text-xs font-black uppercase tracking-widest text-gray-400">{label}</span>
-      <span className="text-sm font-semibold text-gray-700 text-right max-w-[60%] truncate">{value}</span>
     </div>
   )
 }

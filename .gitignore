@@ -41,3 +41,7 @@ swap26-mockup-v1-clean.jpg
 next-env.d.ts
 
 .vercel
+
+# Excel working files & lock temps
+Swappanini_Video_Ideas*.xlsx
+~$*.xlsx

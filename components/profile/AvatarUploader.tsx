@@ -12,9 +12,11 @@ interface Props {
   userId: string
   avatarUrl: string | null
   pseudo: string
+  /** Compact = just the tappable avatar (no text button), for the collapsed header */
+  compact?: boolean
 }
 
-export function AvatarUploader({ userId, avatarUrl, pseudo }: Props) {
+export function AvatarUploader({ userId, avatarUrl, pseudo, compact = false }: Props) {
   const t = useTranslations('profile')
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -67,14 +69,16 @@ export function AvatarUploader({ userId, avatarUrl, pseudo }: Props) {
     }
   }
 
+  const size = compact ? 56 : 72
+
   return (
-    <div className="flex items-center gap-4">
+    <div className={compact ? 'flex flex-col items-center gap-1' : 'flex items-center gap-4'}>
       <button
         type="button"
         onClick={() => fileRef.current?.click()}
         disabled={uploading}
         className="relative flex-shrink-0 rounded-full overflow-hidden active:scale-[0.97] transition-transform"
-        style={{ width: 72, height: 72, border: '2px solid #00C241' }}
+        style={{ width: size, height: size, border: '2px solid #00C241' }}
         aria-label={t('change_photo')}
       >
         {preview ? (
@@ -101,18 +105,22 @@ export function AvatarUploader({ userId, avatarUrl, pseudo }: Props) {
         </span>
       </button>
 
-      <div className="min-w-0">
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          disabled={uploading}
-          className="text-sm font-black px-3 py-1.5 rounded-full transition-all active:scale-[0.97] disabled:opacity-50"
-          style={{ background: '#f3f4f6', color: '#374151' }}
-        >
-          {uploading ? t('photo_uploading') : avatarUrl || preview ? t('change_photo') : t('add_photo')}
-        </button>
-        {error && <p className="text-xs font-medium text-red-500 mt-1.5">{error}</p>}
-      </div>
+      {!compact && (
+        <div className="min-w-0">
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="text-sm font-black px-3 py-1.5 rounded-full transition-all active:scale-[0.97] disabled:opacity-50"
+            style={{ background: '#f3f4f6', color: '#374151' }}
+          >
+            {uploading ? t('photo_uploading') : avatarUrl || preview ? t('change_photo') : t('add_photo')}
+          </button>
+          {error && <p className="text-xs font-medium text-red-500 mt-1.5">{error}</p>}
+        </div>
+      )}
+
+      {compact && error && <p className="text-[10px] font-medium text-red-500 text-center">{error}</p>}
 
       <input
         ref={fileRef}
