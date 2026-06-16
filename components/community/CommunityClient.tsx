@@ -364,13 +364,23 @@ function RequestCard({ request }: { request: FriendRequest }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4">
       <div className="flex items-center gap-3">
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center
-            font-display text-xl font-black flex-shrink-0 border-2"
-          style={{ background: 'white', borderColor: '#00C241', color: '#00C241' }}
-        >
-          {initial}
-        </div>
+        {request.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={request.avatar_url}
+            alt={request.pseudo}
+            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+            style={{ border: '2px solid #00C241' }}
+          />
+        ) : (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center
+              font-display text-xl font-black flex-shrink-0 border-2"
+            style={{ background: 'white', borderColor: '#00C241', color: '#00C241' }}
+          >
+            {initial}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <p className="font-black text-sm" style={{ color: '#1B3B1A' }}>{request.pseudo}</p>
           {location && <p className="text-xs text-gray-400">{location}</p>}

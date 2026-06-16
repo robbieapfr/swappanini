@@ -33,6 +33,7 @@ export interface FriendRequest {
   pseudo: string
   city: string | null
   country: string
+  avatar_url?: string | null
   collection_pct: number
   requested_at: string
 }
@@ -61,14 +62,14 @@ export default async function CommunityPage({
     (supabase.from('friendships') as any)
       .select(`
         requester_id, created_at,
-        requester:users!friendships_requester_id_fkey(id, pseudo, city, country)
+        requester:users!friendships_requester_id_fkey(id, pseudo, city, country, avatar_url)
       `)
       .eq('addressee_id', user.id)
       .eq('status', 'pending') as Promise<{
       data: {
         requester_id: string
         created_at: string
-        requester: { id: string; pseudo: string; city: string | null; country: string } | null
+        requester: { id: string; pseudo: string; city: string | null; country: string; avatar_url: string | null } | null
       }[] | null
     }>,
     // Outgoing pending requests (to know which "Ajouter" to show as "Demande envoyée")
@@ -106,6 +107,7 @@ export default async function CommunityPage({
         pseudo: req.requester.pseudo,
         city: req.requester.city,
         country: req.requester.country,
+        avatar_url: req.requester.avatar_url,
         collection_pct: pct,
         requested_at: req.created_at,
       } satisfies FriendRequest

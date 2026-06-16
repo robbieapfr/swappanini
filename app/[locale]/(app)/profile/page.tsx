@@ -63,10 +63,10 @@ export default async function ProfilePage({
     // Incoming friend requests
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('friendships') as any)
-      .select('requester_id, created_at, requester:users!friendships_requester_id_fkey(id, pseudo, city, country)')
+      .select('requester_id, created_at, requester:users!friendships_requester_id_fkey(id, pseudo, city, country, avatar_url)')
       .eq('addressee_id', user.id)
       .eq('status', 'pending') as Promise<{
-      data: { requester_id: string; created_at: string; requester: { id: string; pseudo: string; city: string | null; country: string } | null }[] | null
+      data: { requester_id: string; created_at: string; requester: { id: string; pseudo: string; city: string | null; country: string; avatar_url: string | null } | null }[] | null
     }>,
     // Outgoing pending
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,6 +97,7 @@ export default async function ProfilePage({
       pseudo: r.requester!.pseudo,
       city: r.requester!.city,
       country: r.requester!.country,
+      avatar_url: r.requester!.avatar_url,
       collection_pct: 0,
       requested_at: r.created_at,
     }))
