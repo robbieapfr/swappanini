@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { updateProfile } from '@/lib/profile/actions'
 import { COUNTRIES } from '@/lib/countries'
 import { CLUB_LEAGUES } from '@/lib/clubs'
+import { computeAge } from '@/lib/age'
 
 import { CommunityClient } from '@/components/community/CommunityClient'
 import { AvatarUploader } from './AvatarUploader'
@@ -17,7 +18,7 @@ interface ProfileData {
   pseudo: string
   first_name: string | null
   last_name: string | null
-  age: number | null
+  birth_year: number | null
   country: string
   city: string | null
   swap_preference: string
@@ -203,7 +204,7 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
   const [pseudo, setPseudo] = useState(originalPseudo)
   const [firstName, setFirstName] = useState(profile?.first_name ?? '')
   const [lastName, setLastName] = useState(profile?.last_name ?? '')
-  const [age, setAge] = useState(profile?.age != null ? String(profile.age) : '')
+  const [birthYear, setBirthYear] = useState(profile?.birth_year != null ? String(profile.birth_year) : '')
   const [country, setCountry] = useState(profile?.country ?? '')
   const [city, setCity] = useState(profile?.city ?? '')
   const [club, setClub] = useState(profile?.supported_club ?? '')
@@ -219,7 +220,7 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
     setPseudo(originalPseudo)
     setFirstName(profile?.first_name ?? '')
     setLastName(profile?.last_name ?? '')
-    setAge(profile?.age != null ? String(profile.age) : '')
+    setBirthYear(profile?.birth_year != null ? String(profile.birth_year) : '')
     setCountry(profile?.country ?? '')
     setCity(profile?.city ?? '')
     setClub(profile?.supported_club ?? '')
@@ -265,7 +266,7 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
         pseudo: pseudo.trim().toLowerCase(),
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        age,
+        birth_year: birthYear,
         country,
         city: city.trim(),
         supported_club: club,
@@ -284,6 +285,13 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
   const swapModeKey = SWAP_MODES.find((m) => m.value === (profile?.swap_preference ?? 'both'))?.key
   const swapModeLabel = swapModeKey ? t(swapModeKey) : '—'
   const countryLabel = COUNTRIES.find((c) => c.code === (profile?.country ?? ''))?.name ?? profile?.country ?? '—'
+  const ageNow = computeAge(profile?.birth_year)
+  const birthYearValue =
+    profile?.birth_year != null
+      ? ageNow != null
+        ? `${profile.birth_year} · ${t('years_old', { count: ageNow })}`
+        : String(profile.birth_year)
+      : '—'
 
   if (!editing) {
     return (
@@ -326,7 +334,7 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
           <ProfileRow label={t('label_pseudo')} value={`@${profile?.pseudo ?? '—'}`} />
           <ProfileRow label={t('label_firstname')} value={profile?.first_name ?? '—'} />
           <ProfileRow label={t('label_lastname')} value={profile?.last_name ?? '—'} />
-          <ProfileRow label={t('label_age')} value={profile?.age != null ? String(profile.age) : '—'} />
+          <ProfileRow label={t('label_birthyear')} value={birthYearValue} />
           <ProfileRow label={t('label_country')} value={countryLabel} />
           <ProfileRow label={t('label_city')} value={profile?.city ?? '—'} />
           {profile?.supported_club && (
@@ -406,15 +414,15 @@ function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; use
         />
       </div>
 
-      {/* Âge */}
+      {/* Année de naissance */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_age')}</label>
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_birthyear')}</label>
         <input
           type="number"
           inputMode="numeric"
-          value={age}
-          onChange={(e) => setAge(e.target.value.replace(/\D/g, '').slice(0, 3))}
-          placeholder="25"
+          value={birthYear}
+          onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, '').slice(0, 4))}
+          placeholder="1998"
           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm
             font-medium text-gray-900 outline-none transition-colors focus:border-[#00C241] focus:bg-white"
         />

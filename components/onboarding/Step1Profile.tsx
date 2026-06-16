@@ -10,7 +10,7 @@ export type ProfileData = {
   pseudo: string
   first_name: string
   last_name: string
-  age: string
+  birth_year: string
   country: string
   city: string
   supported_club: string
@@ -111,14 +111,15 @@ export function Step1Profile({ data, onChange, onNext }: Step1Props) {
         placeholder="Martin"
       />
 
-      {/* Age */}
+      {/* Birth year */}
       <AuthInput
-        id="age"
+        id="birth_year"
         type="number"
-        label={t('age_label')}
-        value={data.age}
-        onChange={(e) => set('age', e.target.value.replace(/\D/g, '').slice(0, 3))}
-        placeholder="25"
+        inputMode="numeric"
+        label={t('birthyear_label')}
+        value={data.birth_year}
+        onChange={(e) => set('birth_year', e.target.value.replace(/\D/g, '').slice(0, 4))}
+        placeholder="1998"
       />
 
       {/* Country */}

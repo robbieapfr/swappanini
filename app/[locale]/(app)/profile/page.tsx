@@ -36,11 +36,11 @@ export default async function ProfilePage({
   const [{ data: profile }, { data: allBadges }, { data: earnedBadges }, leaderboardResult, requestsResult, outgoingResult] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('users') as any)
-      .select('pseudo, first_name, last_name, age, country, city, swap_preference, supported_club, avatar_url')
+      .select('pseudo, first_name, last_name, birth_year, country, city, swap_preference, supported_club, avatar_url')
       .eq('id', user.id)
       .single() as Promise<{
       data: {
-        pseudo: string; first_name: string | null; last_name: string | null; age: number | null
+        pseudo: string; first_name: string | null; last_name: string | null; birth_year: number | null
         country: string; city: string | null; swap_preference: string
         supported_club: string | null; avatar_url: string | null
       } | null

@@ -120,7 +120,8 @@
     "swap_both": "Ambos",
     "mail_info": "Tendrás que cubrir los gastos de envío.",
     "lastname_label": "Apellido",
-    "age_label": "Edad"
+    "age_label": "Edad",
+    "birthyear_label": "Año de nacimiento"
   },
   "auth": {
     "login_title": "Iniciar sesión",
@@ -243,7 +244,9 @@
     "photo": "Foto",
     "change_photo": "Cambiar foto",
     "add_photo": "Añadir foto",
-    "photo_uploading": "Subiendo…"
+    "photo_uploading": "Subiendo…",
+    "label_birthyear": "Año de nacimiento",
+    "years_old": "{count, plural, one {# año} other {# años}}"
   },
   "community": {
     "title": "Community",

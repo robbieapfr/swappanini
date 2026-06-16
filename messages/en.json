@@ -137,7 +137,8 @@
     "swap_both": "Both",
     "mail_info": "You'll need to cover postage costs.",
     "lastname_label": "Last name",
-    "age_label": "Age"
+    "age_label": "Age",
+    "birthyear_label": "Birth year"
   },
   "auth": {
     "login_title": "Sign in",
@@ -260,7 +261,9 @@
     "photo": "Photo",
     "change_photo": "Change photo",
     "add_photo": "Add a photo",
-    "photo_uploading": "Uploading…"
+    "photo_uploading": "Uploading…",
+    "label_birthyear": "Birth year",
+    "years_old": "{count, plural, one {# year} other {# years}}"
   },
   "community": {
     "title": "Community",

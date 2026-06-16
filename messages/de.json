@@ -120,7 +120,8 @@
     "swap_both": "Beides",
     "mail_info": "Du musst die Portokosten selbst tragen.",
     "lastname_label": "Nachname",
-    "age_label": "Alter"
+    "age_label": "Alter",
+    "birthyear_label": "Geburtsjahr"
   },
   "auth": {
     "login_title": "Anmelden",
@@ -243,7 +244,9 @@
     "photo": "Foto",
     "change_photo": "Foto ändern",
     "add_photo": "Foto hinzufügen",
-    "photo_uploading": "Wird hochgeladen…"
+    "photo_uploading": "Wird hochgeladen…",
+    "label_birthyear": "Geburtsjahr",
+    "years_old": "{count, plural, one {# Jahr} other {# Jahre}}"
   },
   "community": {
     "title": "Community",

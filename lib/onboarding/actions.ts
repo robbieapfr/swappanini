@@ -3,24 +3,18 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { defaultLocale } from '@/i18n'
+import { parseBirthYear } from '@/lib/age'
 
 export type OnboardingData = {
   pseudo: string
   first_name: string
   last_name: string
-  age: string
+  birth_year: string
   country: string
   city: string
   supported_club: string
   swap_preference: 'mail' | 'inperson' | 'both'
   locale: string
-}
-
-/** Parse a free-text age into a bounded int, or null if invalid/empty. */
-function parseAge(raw: string): number | null {
-  const n = parseInt(raw, 10)
-  if (Number.isNaN(n) || n < 5 || n > 120) return null
-  return n
 }
 
 export async function saveProfile(data: OnboardingData) {
@@ -37,7 +31,7 @@ export async function saveProfile(data: OnboardingData) {
     pseudo: data.pseudo.trim(),
     first_name: data.first_name.trim() || null,
     last_name: data.last_name.trim() || null,
-    age: parseAge(data.age),
+    birth_year: parseBirthYear(data.birth_year),
     country: data.country,
     city: data.city.trim() || null,
     supported_club: data.supported_club.trim() || null,

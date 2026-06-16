@@ -137,7 +137,8 @@
     "swap_both": "Les deux",
     "mail_info": "Tu devras prendre en charge les frais de port.",
     "lastname_label": "Nom",
-    "age_label": "Âge"
+    "age_label": "Âge",
+    "birthyear_label": "Année de naissance"
   },
   "auth": {
     "login_title": "Connexion",
@@ -260,7 +261,9 @@
     "photo": "Photo",
     "change_photo": "Changer la photo",
     "add_photo": "Ajouter une photo",
-    "photo_uploading": "Envoi…"
+    "photo_uploading": "Envoi…",
+    "label_birthyear": "Année de naissance",
+    "years_old": "{count, plural, one {# an} other {# ans}}"
   },
   "community": {
     "title": "Communauté",

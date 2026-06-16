@@ -2,22 +2,17 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { parseBirthYear } from '@/lib/age'
 
 export interface UpdateProfileInput {
   pseudo: string
   first_name: string
   last_name: string
-  age: string
+  birth_year: string
   country: string
   city: string
   supported_club: string
   swap_preference: 'mail' | 'inperson' | 'both'
-}
-
-function parseAge(raw: string): number | null {
-  const n = parseInt(raw, 10)
-  if (Number.isNaN(n) || n < 5 || n > 120) return null
-  return n
 }
 
 export async function updateProfile(input: UpdateProfileInput): Promise<{ error?: string }> {
@@ -31,7 +26,7 @@ export async function updateProfile(input: UpdateProfileInput): Promise<{ error?
       pseudo: input.pseudo.trim().toLowerCase(),
       first_name: input.first_name.trim() || null,
       last_name: input.last_name.trim() || null,
-      age: parseAge(input.age),
+      birth_year: parseBirthYear(input.birth_year),
       country: input.country,
       city: input.city.trim() || null,
       supported_club: input.supported_club || null,

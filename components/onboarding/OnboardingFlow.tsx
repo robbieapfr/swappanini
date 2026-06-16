@@ -28,7 +28,7 @@ export function OnboardingFlow({ locale }: OnboardingFlowProps) {
     pseudo: '',
     first_name: '',
     last_name: '',
-    age: '',
+    birth_year: '',
     country: '',
     city: '',
     supported_club: '',
