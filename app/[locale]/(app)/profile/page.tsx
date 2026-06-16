@@ -36,12 +36,13 @@ export default async function ProfilePage({
   const [{ data: profile }, { data: allBadges }, { data: earnedBadges }, leaderboardResult, requestsResult, outgoingResult] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('users') as any)
-      .select('pseudo, first_name, country, city, swap_preference, supported_club')
+      .select('pseudo, first_name, last_name, age, country, city, swap_preference, supported_club, avatar_url')
       .eq('id', user.id)
       .single() as Promise<{
       data: {
-        pseudo: string; first_name: string | null; country: string
-        city: string | null; swap_preference: string; supported_club: string | null
+        pseudo: string; first_name: string | null; last_name: string | null; age: number | null
+        country: string; city: string | null; swap_preference: string
+        supported_club: string | null; avatar_url: string | null
       } | null
     }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,7 +105,7 @@ export default async function ProfilePage({
 
   return (
     <div className="min-h-screen bg-white">
-      <AppHeader locale={locale} pseudo={profile?.pseudo} title={tp('header_title')} />
+      <AppHeader locale={locale} pseudo={profile?.pseudo} avatarUrl={profile?.avatar_url} title={tp('header_title')} />
       <ProfileClient
         email={user.email ?? ''}
         profile={profile}

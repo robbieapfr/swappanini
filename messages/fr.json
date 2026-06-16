@@ -135,7 +135,9 @@
     "swap_mail": "Par courrier",
     "swap_inperson": "En main",
     "swap_both": "Les deux",
-    "mail_info": "Tu devras prendre en charge les frais de port."
+    "mail_info": "Tu devras prendre en charge les frais de port.",
+    "lastname_label": "Nom",
+    "age_label": "Âge"
   },
   "auth": {
     "login_title": "Connexion",
@@ -252,7 +254,13 @@
     "notif_completed_label": "Échange complété",
     "notif_completed_desc": "Confirmation de fin d’échange",
     "notif_friend_label": "Demandes d’amis",
-    "notif_friend_desc": "Quand quelqu’un veut t’ajouter"
+    "notif_friend_desc": "Quand quelqu’un veut t’ajouter",
+    "label_lastname": "Nom",
+    "label_age": "Âge",
+    "photo": "Photo",
+    "change_photo": "Changer la photo",
+    "add_photo": "Ajouter une photo",
+    "photo_uploading": "Envoi…"
   },
   "community": {
     "title": "Communauté",

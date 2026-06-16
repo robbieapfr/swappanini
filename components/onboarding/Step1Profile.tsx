@@ -9,6 +9,8 @@ import { AuthInput } from '@/components/ui/AuthInput'
 export type ProfileData = {
   pseudo: string
   first_name: string
+  last_name: string
+  age: string
   country: string
   city: string
   supported_club: string
@@ -98,6 +100,25 @@ export function Step1Profile({ data, onChange, onNext }: Step1Props) {
         value={data.first_name}
         onChange={(e) => set('first_name', e.target.value)}
         placeholder="Alex"
+      />
+
+      {/* Last name */}
+      <AuthInput
+        id="last_name"
+        label={t('lastname_label')}
+        value={data.last_name}
+        onChange={(e) => set('last_name', e.target.value)}
+        placeholder="Martin"
+      />
+
+      {/* Age */}
+      <AuthInput
+        id="age"
+        type="number"
+        label={t('age_label')}
+        value={data.age}
+        onChange={(e) => set('age', e.target.value.replace(/\D/g, '').slice(0, 3))}
+        placeholder="25"
       />
 
       {/* Country */}

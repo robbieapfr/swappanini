@@ -26,7 +26,7 @@ export default async function CollectionPage({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: profile } = await (supabase.from('users') as any)
-    .select('pseudo').eq('id', user.id).single() as { data: { pseudo: string } | null }
+    .select('pseudo, avatar_url').eq('id', user.id).single() as { data: { pseudo: string; avatar_url: string | null } | null }
 
   const [{ data: allStickers }, { data: userStickers }] = await Promise.all([
     supabase
@@ -54,7 +54,7 @@ export default async function CollectionPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <AppHeader locale={locale} pseudo={profile?.pseudo} title={t('title')} />
+      <AppHeader locale={locale} pseudo={profile?.pseudo} avatarUrl={profile?.avatar_url} title={t('title')} />
       <CollectionGrid
         allStickers={allStickers ?? []}
         initialUserStickers={initialMap}

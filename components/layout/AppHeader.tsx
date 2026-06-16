@@ -4,13 +4,15 @@ import { LanguageToggle } from './LanguageToggle'
 interface AppHeaderProps {
   locale: string
   pseudo?: string | null
+  /** Profile photo URL (falls back to the pseudo initial) */
+  avatarUrl?: string | null
   /** Optional left slot override (defaults to avatar) */
   leftSlot?: React.ReactNode
   /** Optional title override (defaults to page title) */
   title?: string
 }
 
-export function AppHeader({ locale, pseudo, title, leftSlot }: AppHeaderProps) {
+export function AppHeader({ locale, pseudo, avatarUrl, title, leftSlot }: AppHeaderProps) {
   const initial = pseudo?.[0]?.toUpperCase() ?? '?'
 
   return (
@@ -18,13 +20,22 @@ export function AppHeader({ locale, pseudo, title, leftSlot }: AppHeaderProps) {
       {/* Left: avatar or custom slot */}
       {leftSlot ?? (
         <Link href={`/${locale}/profile`} className="relative flex-shrink-0">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center
-              font-bold text-base border-2 border-gray-100"
-            style={{ background: '#f3f4f6', color: '#374151' }}
-          >
-            {initial}
-          </div>
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarUrl}
+              alt={pseudo ?? ''}
+              className="w-10 h-10 rounded-full object-cover border-2 border-gray-100"
+            />
+          ) : (
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center
+                font-bold text-base border-2 border-gray-100"
+              style={{ background: '#f3f4f6', color: '#374151' }}
+            >
+              {initial}
+            </div>
+          )}
           {/* Online dot */}
           <span
             className="absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-white"

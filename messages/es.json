@@ -118,7 +118,9 @@
     "swap_mail": "Por correo",
     "swap_inperson": "En persona",
     "swap_both": "Ambos",
-    "mail_info": "Tendrás que cubrir los gastos de envío."
+    "mail_info": "Tendrás que cubrir los gastos de envío.",
+    "lastname_label": "Apellido",
+    "age_label": "Edad"
   },
   "auth": {
     "login_title": "Iniciar sesión",
@@ -235,7 +237,13 @@
     "notif_completed_label": "Swap completed",
     "notif_completed_desc": "Confirmation that a swap is done",
     "notif_friend_label": "Friend requests",
-    "notif_friend_desc": "When someone wants to add you"
+    "notif_friend_desc": "When someone wants to add you",
+    "label_lastname": "Apellido",
+    "label_age": "Edad",
+    "photo": "Foto",
+    "change_photo": "Cambiar foto",
+    "add_photo": "Añadir foto",
+    "photo_uploading": "Subiendo…"
   },
   "community": {
     "title": "Community",

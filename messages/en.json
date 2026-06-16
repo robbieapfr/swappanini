@@ -135,7 +135,9 @@
     "swap_mail": "By mail",
     "swap_inperson": "In person",
     "swap_both": "Both",
-    "mail_info": "You'll need to cover postage costs."
+    "mail_info": "You'll need to cover postage costs.",
+    "lastname_label": "Last name",
+    "age_label": "Age"
   },
   "auth": {
     "login_title": "Sign in",
@@ -252,7 +254,13 @@
     "notif_completed_label": "Swap completed",
     "notif_completed_desc": "Confirmation that a swap is done",
     "notif_friend_label": "Friend requests",
-    "notif_friend_desc": "When someone wants to add you"
+    "notif_friend_desc": "When someone wants to add you",
+    "label_lastname": "Last name",
+    "label_age": "Age",
+    "photo": "Photo",
+    "change_photo": "Change photo",
+    "add_photo": "Add a photo",
+    "photo_uploading": "Uploading…"
   },
   "community": {
     "title": "Community",

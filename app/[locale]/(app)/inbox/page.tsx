@@ -37,8 +37,8 @@ export default async function InboxPage({
 
   const [profileResult, { data: swaps }] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase.from('users') as any).select('pseudo').eq('id', user.id).single() as Promise<{
-      data: { pseudo: string } | null; error: unknown
+    (supabase.from('users') as any).select('pseudo, avatar_url').eq('id', user.id).single() as Promise<{
+      data: { pseudo: string; avatar_url: string | null } | null; error: unknown
     }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('swaps') as any)
@@ -60,7 +60,7 @@ export default async function InboxPage({
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <AppHeader locale={locale} pseudo={profileResult.data?.pseudo} title={t('title')} />
+      <AppHeader locale={locale} pseudo={profileResult.data?.pseudo} avatarUrl={profileResult.data?.avatar_url} title={t('title')} />
       <InboxClient
         swaps={allSwaps}
         currentUserId={user.id}

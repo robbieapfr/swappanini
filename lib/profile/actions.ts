@@ -6,10 +6,18 @@ import { revalidatePath } from 'next/cache'
 export interface UpdateProfileInput {
   pseudo: string
   first_name: string
+  last_name: string
+  age: string
   country: string
   city: string
   supported_club: string
   swap_preference: 'mail' | 'inperson' | 'both'
+}
+
+function parseAge(raw: string): number | null {
+  const n = parseInt(raw, 10)
+  if (Number.isNaN(n) || n < 5 || n > 120) return null
+  return n
 }
 
 export async function updateProfile(input: UpdateProfileInput): Promise<{ error?: string }> {
@@ -22,6 +30,8 @@ export async function updateProfile(input: UpdateProfileInput): Promise<{ error?
     .update({
       pseudo: input.pseudo.trim().toLowerCase(),
       first_name: input.first_name.trim() || null,
+      last_name: input.last_name.trim() || null,
+      age: parseAge(input.age),
       country: input.country,
       city: input.city.trim() || null,
       supported_club: input.supported_club || null,
@@ -33,6 +43,23 @@ export async function updateProfile(input: UpdateProfileInput): Promise<{ error?
     if (error.code === '23505') return { error: 'Ce pseudo est déjà pris.' }
     return { error: 'Une erreur est survenue. Réessaie.' }
   }
+
+  revalidatePath('/', 'layout')
+  return {}
+}
+
+/** Persist the public URL of the user's uploaded profile photo. */
+export async function updateAvatar(avatarUrl: string | null): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non autorisé' }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from('users') as any)
+    .update({ avatar_url: avatarUrl })
+    .eq('id', user.id)
+
+  if (error) return { error: 'Une erreur est survenue. Réessaie.' }
 
   revalidatePath('/', 'layout')
   return {}

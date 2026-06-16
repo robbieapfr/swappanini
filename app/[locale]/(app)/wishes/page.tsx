@@ -35,8 +35,8 @@ export default async function WantsPage({
     { data: allOwned },
   ] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase.from('users') as any).select('pseudo').eq('id', user.id).single() as Promise<{
-      data: { pseudo: string } | null; error: unknown
+    (supabase.from('users') as any).select('pseudo, avatar_url').eq('id', user.id).single() as Promise<{
+      data: { pseudo: string; avatar_url: string | null } | null; error: unknown
     }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (admin.from('stickers') as any)
@@ -117,7 +117,7 @@ export default async function WantsPage({
 
   return (
     <div className="min-h-screen bg-white">
-      <AppHeader locale={locale} pseudo={profile?.pseudo} title={t('title')} />
+      <AppHeader locale={locale} pseudo={profile?.pseudo} avatarUrl={profile?.avatar_url} title={t('title')} />
       <WantsClient
         allStickers={allStickers}
         initialUserStickers={initialUserStickers}

@@ -118,7 +118,9 @@
     "swap_mail": "Per Post",
     "swap_inperson": "Persönlich",
     "swap_both": "Beides",
-    "mail_info": "Du musst die Portokosten selbst tragen."
+    "mail_info": "Du musst die Portokosten selbst tragen.",
+    "lastname_label": "Nachname",
+    "age_label": "Alter"
   },
   "auth": {
     "login_title": "Anmelden",
@@ -235,7 +237,13 @@
     "notif_completed_label": "Swap completed",
     "notif_completed_desc": "Confirmation that a swap is done",
     "notif_friend_label": "Friend requests",
-    "notif_friend_desc": "When someone wants to add you"
+    "notif_friend_desc": "When someone wants to add you",
+    "label_lastname": "Nachname",
+    "label_age": "Alter",
+    "photo": "Foto",
+    "change_photo": "Foto ändern",
+    "add_photo": "Foto hinzufügen",
+    "photo_uploading": "Wird hochgeladen…"
   },
   "community": {
     "title": "Community",

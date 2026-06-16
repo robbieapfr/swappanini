@@ -30,9 +30,9 @@ export default async function HomePage({
   ] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('users') as any)
-      .select('pseudo, swap_preference')
+      .select('pseudo, swap_preference, avatar_url')
       .eq('id', user.id)
-      .single() as Promise<{ data: { pseudo: string; swap_preference: string } | null; error: unknown }>,
+      .single() as Promise<{ data: { pseudo: string; swap_preference: string; avatar_url: string | null } | null; error: unknown }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('user_stickers') as any)
       .select('quantity')
@@ -59,7 +59,7 @@ export default async function HomePage({
 
   return (
     <div className="min-h-screen bg-white">
-      <AppHeader locale={locale} pseudo={profile?.pseudo} />
+      <AppHeader locale={locale} pseudo={profile?.pseudo} avatarUrl={profile?.avatar_url} />
 
       <div className="px-4 pb-6 space-y-5">
         {/* ── Stat pills ── */}

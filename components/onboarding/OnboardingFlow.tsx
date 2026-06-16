@@ -27,6 +27,8 @@ export function OnboardingFlow({ locale }: OnboardingFlowProps) {
   const [profile, setProfile] = useState<ProfileData>({
     pseudo: '',
     first_name: '',
+    last_name: '',
+    age: '',
     country: '',
     city: '',
     supported_club: '',

@@ -9,16 +9,20 @@ import { COUNTRIES } from '@/lib/countries'
 import { CLUB_LEAGUES } from '@/lib/clubs'
 
 import { CommunityClient } from '@/components/community/CommunityClient'
+import { AvatarUploader } from './AvatarUploader'
 import type { Badge } from '@/app/[locale]/(app)/profile/page'
 import type { LeaderboardUser, FriendRequest } from '@/app/[locale]/(app)/profile/community/page'
 
 interface ProfileData {
   pseudo: string
   first_name: string | null
+  last_name: string | null
+  age: number | null
   country: string
   city: string | null
   swap_preference: string
   supported_club: string | null
+  avatar_url: string | null
 }
 
 interface Props {
@@ -68,7 +72,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
   return (
     <div className="px-4 pb-8 space-y-4">
       {/* ── Profile info (editable) ── */}
-      <ProfileInfoCard profile={profile} />
+      <ProfileInfoCard profile={profile} userId={currentUserId} />
 
       {/* ── Email card ── */}
       <div className="rounded-2xl border border-gray-100 px-4 py-4">
@@ -188,7 +192,7 @@ export function ProfileClient({ email, profile, badges, locale, leaderboard, fri
 }
 
 // ── Profile info card (with inline edit) ─────────────────────────────
-function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
+function ProfileInfoCard({ profile, userId }: { profile: ProfileData | null; userId: string }) {
   const t = useTranslations('profile')
   const [editing, setEditing] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -198,6 +202,8 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
 
   const [pseudo, setPseudo] = useState(originalPseudo)
   const [firstName, setFirstName] = useState(profile?.first_name ?? '')
+  const [lastName, setLastName] = useState(profile?.last_name ?? '')
+  const [age, setAge] = useState(profile?.age != null ? String(profile.age) : '')
   const [country, setCountry] = useState(profile?.country ?? '')
   const [city, setCity] = useState(profile?.city ?? '')
   const [club, setClub] = useState(profile?.supported_club ?? '')
@@ -212,6 +218,8 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
   function cancelEdit() {
     setPseudo(originalPseudo)
     setFirstName(profile?.first_name ?? '')
+    setLastName(profile?.last_name ?? '')
+    setAge(profile?.age != null ? String(profile.age) : '')
     setCountry(profile?.country ?? '')
     setCity(profile?.city ?? '')
     setClub(profile?.supported_club ?? '')
@@ -256,6 +264,8 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
       const result = await updateProfile({
         pseudo: pseudo.trim().toLowerCase(),
         first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        age,
         country,
         city: city.trim(),
         supported_club: club,
@@ -303,9 +313,20 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
           </p>
         )}
 
+        {/* Avatar */}
+        <div className="mb-4">
+          <AvatarUploader
+            userId={userId}
+            avatarUrl={profile?.avatar_url ?? null}
+            pseudo={profile?.pseudo ?? '?'}
+          />
+        </div>
+
         <div className="space-y-0">
           <ProfileRow label={t('label_pseudo')} value={`@${profile?.pseudo ?? '—'}`} />
           <ProfileRow label={t('label_firstname')} value={profile?.first_name ?? '—'} />
+          <ProfileRow label={t('label_lastname')} value={profile?.last_name ?? '—'} />
+          <ProfileRow label={t('label_age')} value={profile?.age != null ? String(profile.age) : '—'} />
           <ProfileRow label={t('label_country')} value={countryLabel} />
           <ProfileRow label={t('label_city')} value={profile?.city ?? '—'} />
           {profile?.supported_club && (
@@ -367,6 +388,33 @@ function ProfileInfoCard({ profile }: { profile: ProfileData | null }) {
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="Alex"
+          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm
+            font-medium text-gray-900 outline-none transition-colors focus:border-[#00C241] focus:bg-white"
+        />
+      </div>
+
+      {/* Nom */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_lastname')}</label>
+        <input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Martin"
+          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm
+            font-medium text-gray-900 outline-none transition-colors focus:border-[#00C241] focus:bg-white"
+        />
+      </div>
+
+      {/* Âge */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-black uppercase tracking-widest text-gray-500">{t('label_age')}</label>
+        <input
+          type="number"
+          inputMode="numeric"
+          value={age}
+          onChange={(e) => setAge(e.target.value.replace(/\D/g, '').slice(0, 3))}
+          placeholder="25"
           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm
             font-medium text-gray-900 outline-none transition-colors focus:border-[#00C241] focus:bg-white"
         />
