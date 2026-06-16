@@ -175,25 +175,34 @@ function UserCard({
       }
     >
       <div className="flex items-start gap-3">
-        {/* Rank avatar */}
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{
-            background: rank === 1 ? '#AAFF00' : '#f3f4f6',
-          }}
-        >
-          {rank <= 3 ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M2 7l3 9h14l3-9-6 4-4-7-4 7-6-4Z"
-                fill={rank === 1 ? '#1B3B1A' : '#9ca3af'}
-                stroke={rank === 1 ? '#1B3B1A' : '#9ca3af'}
-                strokeWidth="1.2"
-                strokeLinejoin="round"
-              />
-            </svg>
+        {/* Rank number + profile photo */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {mode === 'leaderboard' && (
+            <span
+              className="w-5 text-center font-black text-sm tabular-nums"
+              style={{
+                color:
+                  rank === 1 ? '#F5B301' : rank === 2 ? '#9CA3AF' : rank === 3 ? '#CD7F32' : '#9CA3AF',
+              }}
+            >
+              {rank}
+            </span>
+          )}
+          {user.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.avatar_url}
+              alt={user.pseudo}
+              className="w-11 h-11 rounded-full object-cover"
+              style={{ border: '2px solid #f3f4f6' }}
+            />
           ) : (
-            <span className="font-black text-sm text-gray-500">#{rank}</span>
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center font-black text-base"
+              style={{ background: '#f3f4f6', color: '#00C241' }}
+            >
+              {user.pseudo[0]?.toUpperCase() ?? '?'}
+            </div>
           )}
         </div>
 

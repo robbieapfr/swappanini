@@ -22,6 +22,8 @@ export interface LeaderboardUser {
   rank: number
   /** true for the current user's own row */
   is_me?: boolean
+  /** profile photo URL (falls back to the pseudo initial) */
+  avatar_url?: string | null
   /** true if I sent the request (pending outgoing) */
   i_requested?: boolean
 }
