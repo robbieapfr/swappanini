@@ -72,6 +72,20 @@ export async function proposeSwap(
     return { swapId: null, error: 'Seuls les doublons peuvent être échangés.' }
   }
 
+  // One conversation per pair: if an active swap already exists between these
+  // two users (either direction), open it instead of creating a duplicate.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: existing } = await (supabase.from('swaps') as any)
+    .select('id')
+    .or(`and(initiator_id.eq.${user.id},receiver_id.eq.${receiverId}),and(initiator_id.eq.${receiverId},receiver_id.eq.${user.id})`)
+    .in('status', ['pending', 'accepted', 'initiator_sent', 'receiver_sent'])
+    .limit(1)
+    .maybeSingle() as { data: { id: string } | null }
+
+  if (existing) {
+    return { swapId: existing.id, error: null }
+  }
+
   // Create swap
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: swap, error: swapError } = await (supabase.from('swaps') as any)
