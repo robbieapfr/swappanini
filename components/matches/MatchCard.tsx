@@ -23,13 +23,23 @@ export function MatchCard({ match, locale }: MatchCardProps) {
       {/* ── Top row: avatar + info + location pin ── */}
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center
-            font-display text-xl font-black flex-shrink-0 border-2"
-          style={{ background: 'white', borderColor: '#00C241', color: '#00C241' }}
-        >
-          {initial}
-        </div>
+        {match.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={match.avatar_url}
+            alt={match.pseudo}
+            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+            style={{ border: '2px solid #00C241' }}
+          />
+        ) : (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center
+              font-display text-xl font-black flex-shrink-0 border-2"
+            style={{ background: 'white', borderColor: '#00C241', color: '#00C241' }}
+          >
+            {initial}
+          </div>
+        )}
 
         {/* Name + stats */}
         <div className="flex-1 min-w-0">

@@ -46,6 +46,7 @@ export default async function HomePage({
       data: {
         id: string; pseudo: string; city: string | null; country: string
         i_give_count: number; i_get_count: number; priority_match_count: number; match_score: number
+        avatar_url: string | null
       }[] | null; error: unknown
     }>,
   ])
@@ -134,13 +135,22 @@ export default async function HomePage({
                   className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3
                     border border-gray-100 active:scale-[0.99] transition-transform"
                 >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center
-                      font-black text-base flex-shrink-0"
-                    style={{ background: '#AAFF00', color: '#1B3B1A' }}
-                  >
-                    {match.pseudo[0].toUpperCase()}
-                  </div>
+                  {match.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={match.avatar_url}
+                      alt={match.pseudo}
+                      className="w-10 h-10 rounded-xl object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center
+                        font-black text-base flex-shrink-0"
+                      style={{ background: '#AAFF00', color: '#1B3B1A' }}
+                    >
+                      {match.pseudo[0].toUpperCase()}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-gray-900 truncate">{match.pseudo}</p>
                     <p className="text-xs text-gray-400">{match.country}</p>

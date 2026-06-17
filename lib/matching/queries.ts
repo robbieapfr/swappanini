@@ -96,6 +96,7 @@ export interface MatchWithStickers {
   priority_match_count: number
   match_score: number
   swap_preference: string | null
+  avatar_url: string | null
   stickers_i_receive: {
     id: number
     number: number
@@ -128,6 +129,7 @@ export async function getMatchesWithStickers(
       priority_match_count: number
       match_score: number
       swap_preference: string | null
+      avatar_url: string | null
     }[] | null
   }
 
