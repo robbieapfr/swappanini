@@ -116,6 +116,7 @@ function SwapCard({
   const pseudo = other?.pseudo ?? '?'
   const location = [other?.city, other?.country].filter(Boolean).join(', ')
   const initial = pseudo[0].toUpperCase()
+  const avatarUrl = other?.avatar_url ?? null
   const statusCfg = STATUS_LABELS[swap.status] ?? STATUS_LABELS.pending
   const isMailMode = true // TODO: swap.swap_mode
 
@@ -130,13 +131,23 @@ function SwapCard({
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center
-            font-display text-xl font-black flex-shrink-0 border-2"
-          style={{ background: 'white', borderColor: '#00C241', color: '#00C241' }}
-        >
-          {initial}
-        </div>
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt={pseudo}
+            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+            style={{ border: '2px solid #00C241' }}
+          />
+        ) : (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center
+              font-display text-xl font-black flex-shrink-0 border-2"
+            style={{ background: 'white', borderColor: '#00C241', color: '#00C241' }}
+          >
+            {initial}
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 min-w-0">

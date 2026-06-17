@@ -34,8 +34,8 @@ export default async function SwapPage({
       updated_at,
       initiator_id,
       receiver_id,
-      initiator:users!swaps_initiator_id_fkey(pseudo, country),
-      receiver:users!swaps_receiver_id_fkey(pseudo, country)
+      initiator:users!swaps_initiator_id_fkey(pseudo, country, avatar_url),
+      receiver:users!swaps_receiver_id_fkey(pseudo, country, avatar_url)
     `)
     .eq('id', swapId)
     .single() as {
@@ -45,8 +45,8 @@ export default async function SwapPage({
       created_at: string
       initiator_id: string
       receiver_id: string
-      initiator: { pseudo: string; country: string } | null
-      receiver: { pseudo: string; country: string } | null
+      initiator: { pseudo: string; country: string; avatar_url: string | null } | null
+      receiver: { pseudo: string; country: string; avatar_url: string | null } | null
     } | null
   }
 
@@ -102,10 +102,26 @@ export default async function SwapPage({
       <div className="flex items-center gap-3 px-4 pt-safe pt-5 pb-4" style={{ background: '#00C241' }}>
         <Link
           href={`/${locale}/inbox`}
-          className="text-white/80 hover:text-white text-lg font-black w-8 flex-shrink-0"
+          className="text-white/80 hover:text-white text-lg font-black w-6 flex-shrink-0"
         >
           ←
         </Link>
+        {otherUser?.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={otherUser.avatar_url}
+            alt={otherUser.pseudo}
+            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+            style={{ border: '2px solid rgba(255,255,255,0.6)' }}
+          />
+        ) : (
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center font-display text-lg font-black flex-shrink-0"
+            style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}
+          >
+            {otherUser?.pseudo?.[0]?.toUpperCase() ?? '?'}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <p className="font-display text-lg text-white truncate">
             {otherUser?.pseudo ?? '?'}

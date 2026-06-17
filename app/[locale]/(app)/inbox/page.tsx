@@ -16,8 +16,8 @@ export interface SwapRow {
   updated_at: string
   initiator_id: string
   receiver_id: string
-  initiator: { pseudo: string; city: string | null; country: string } | null
-  receiver: { pseudo: string; city: string | null; country: string } | null
+  initiator: { pseudo: string; city: string | null; country: string; avatar_url: string | null } | null
+  receiver: { pseudo: string; city: string | null; country: string; avatar_url: string | null } | null
   i_give_count?: number
   i_get_count?: number
 }
@@ -44,8 +44,8 @@ export default async function InboxPage({
     (supabase.from('swaps') as any)
       .select(`
         id, status, created_at, updated_at, initiator_id, receiver_id,
-        initiator:users!swaps_initiator_id_fkey(pseudo, city, country),
-        receiver:users!swaps_receiver_id_fkey(pseudo, city, country)
+        initiator:users!swaps_initiator_id_fkey(pseudo, city, country, avatar_url),
+        receiver:users!swaps_receiver_id_fkey(pseudo, city, country, avatar_url)
       `)
       .or(`initiator_id.eq.${user.id},receiver_id.eq.${user.id}`)
       .order('updated_at', { ascending: false }) as Promise<{
