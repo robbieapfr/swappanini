@@ -1,13 +1,14 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { locales, type Locale } from '@/i18n'
+import { type Locale } from '@/i18n'
 import { createClient } from '@/lib/supabase/server'
 import { SwapThread } from '@/components/inbox/SwapThread'
 
-export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }))
-}
+// Per-swap, auth-dependent page — always rendered dynamically.
+// (No generateStaticParams: swap ids can't be prerendered, and pairing it
+// with cookie-based auth triggers DYNAMIC_SERVER_USAGE.)
+export const dynamic = 'force-dynamic'
 
 export default async function SwapPage({
   params,
