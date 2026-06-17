@@ -246,8 +246,8 @@ export function ProposePageClient({
 
       {/* ── Sticky submit ── */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-3 bg-white"
-        style={{ borderTop: '1px solid #f3f4f6' }}
+        className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-3 bg-white"
+        style={{ borderTop: '1px solid #f3f4f6', paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
       >
         {/* Balance summary */}
         <div className="flex items-center justify-between mb-2.5 text-sm">
